@@ -596,7 +596,7 @@ end)
 local healing = cap:get_special()
 healing:set_skill_icon(sprite_skills, 8)
 healing.cooldown = 0
-healing.damage = 10.0
+healing.damage = 20.0
 healing.require_key_press = true
 healing:clear_callbacks()
 
