@@ -1,0 +1,43 @@
+{
+"survivor" : {
+	"captain" : {
+		"name" : "Captain",
+		"nameUpper" : "CAPTAIN",
+		"description": "The <y>Captain</c> is a unique survivor that can control the battlefield with utility and damage - with help from the UES Safe Travels.",
+		"endQuote": "..and so he left, with a new tale to tell.",
+		}
+	},
+"skill" : {
+	"captainZ": {
+			"name": "Vulcan Shotgun",
+			"description": "Fire a blast of pellets for <y>8x75% damage</c>. Charging the attack narrows the <b>spread</c> and increases <b>range</c>."
+		},
+	"captainX": {
+			"name": "Power Tazer",
+			"description": "Fire a fast tazer for <y>60% damage</c>, <y>shocking</c> enemies, immobilizing them."
+		},
+	"captainC": {
+			"name": "Orbital Probe",
+			"description": "Request up to <y>3</c> Orbital Probes from the <y>UES Safe Travels</c>. Each probe deals <y>600% damage</c> and <y>stuns</c>."
+		},
+	"captainC_1": {
+			"name": "Orbital Probe",
+			"description": "Request up to <y>3</c> Orbital Probes from the <y>UES Safe Travels</c>. Each probe deals <y>600% damage</c> and <y>stuns</c>."
+		},
+	"captainV": {
+			"name": "Beacon: Healing",
+			"description": "Request a <b>permanent</c> Healing Beacon, <g>healing</c> all nearby allies for <g>10%</c> of their <g>maximum health</c> every second. Can only be requested <b>once per stage</c>."
+		},
+	},
+"item" : {
+	"defensiveMicrobots" : {
+		"name" : "Defensive Microbots",
+		"pickup": "Shoot down nearby projectiles. Recharge rate scales with attack speed.",
+		"description": "Shoot down <y>1</c> <c_stack>(+1 per stack)</c> projectiles within <y>20m</c> every <y>0.5 seconds</c>. <b>Recharge rate scales with attack speed</c>.",
+		"destination": "<r>TOP SECRET</c>",
+		"date": "08/11/2056",
+		"story": "'Captain, look out!' \n\nA voice cried from the old man's periphery. But he knew he was in no danger – with a chirp, his companion microbots activated and fired, disintegrating the fireball. Just as it did every time. \n\nQuickly spinning on his heel, the old man fired his shotgun, decapitating the Lemurian with a swift and pronounced BOOM. \n\n'I'd worry more about your own safety than mine, private.'",
+		"priority": "<r>High Priority</c>"
+		}
+	},
+}
