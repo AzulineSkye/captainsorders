@@ -2,8 +2,8 @@ local sprite_loadout = Resources.sprite_load(NAMESPACE, "captainSelect", path.co
 local sprite_portrait = Resources.sprite_load(NAMESPACE, "captainPortrait", path.combine(PATH, "Sprites/portrait.png"), 2)
 local sprite_portrait_small	= Resources.sprite_load(NAMESPACE, "captainPortraitSmall", path.combine(PATH, "Sprites/portraitSmall.png"))
 local sprite_skills = Resources.sprite_load(NAMESPACE, "captainSkills", path.combine(PATH, "Sprites/skills.png"), 12)
-local sprite_idle = Resources.sprite_load(NAMESPACE, "captainIdle", path.combine(PATH, "Sprites/idle.png"), 1, 12, 20)
-local sprite_idle_half = Resources.sprite_load(NAMESPACE, "captainIdleHalf", path.combine(PATH, "Sprites/idleHalf.png"), 1, 12, 20)
+local sprite_idle = Resources.sprite_load(NAMESPACE, "captainIdle", path.combine(PATH, "Sprites/idle.png"), 1, 15, 20)
+local sprite_idle_half = Resources.sprite_load(NAMESPACE, "captainIdleHalf", path.combine(PATH, "Sprites/idleHalf.png"), 1, 15, 20)
 local sprite_walk = Resources.sprite_load(NAMESPACE, "captainWalk", path.combine(PATH, "Sprites/walk.png"), 8, 14, 20)
 local sprite_walk_half = Resources.sprite_load(NAMESPACE, "captainWalkHalf", path.combine(PATH, "Sprites/walkHalf.png"), 8, 14, 20)
 local sprite_walk_back = Resources.sprite_load(NAMESPACE, "captainWalkBack", path.combine(PATH, "Sprites/walkBack.png"), 8, 14, 20)
@@ -116,12 +116,13 @@ parProbeTrailLine:set_scale(0.75, 0.5)
 parProbeTrailLine:set_size(1, 1, 0, 0)
 parProbeTrailLine:set_alpha2(1, 0)
 parProbeTrailLine:set_orientation(90, 90, 0, 0, true)
+parProbeTrailCircle:set_speed(30, 30, 0, 0)
 
 local parProbeTrail = Particle.new(NAMESPACE, "particleCaptainProbeTrail")
-parProbeTrail:set_colour2(Color.from_rgb(255, 236, 215), Color.from_rgb(255, 174, 92))
+parProbeTrail:set_colour2(Color.from_rgb(255, 232, 68), Color.from_rgb(241, 185, 96))
 parProbeTrail:set_orientation(50, 50, 0, 0, true)
-parProbeTrail:set_scale(0.7, 0.7)
-parProbeTrail:set_speed(45, 45, 0, 0)
+parProbeTrail:set_scale(0.9, 0.9)
+parProbeTrail:set_speed(44.85, 44.85, 0, 0)
 parProbeTrail:set_sprite(gm.constants.sSparks8, false, false, false)
 parProbeTrail:set_step(1, parProbeTrailLine)
 
@@ -425,7 +426,7 @@ priProbe:onActivate(function(actor)
 	if actor:get_active_skill(Skill.SLOT.primary).skill_id == priProbe.value and actor:get_active_skill(Skill.SLOT.primary).stock == 0 then
 		actor:remove_skill_override(Skill.SLOT.primary, priProbe, 10)
 	end
-	actor:collision_line_advanced(actor.x, actor.y + 10, actor.x + 200 * actor.image_xscale, actor.y + 10, gm.constants.pBlock, true, true)
+	actor:collision_line_advanced(actor.x, actor.y + 10, actor.x + 150 * actor.image_xscale, actor.y + 10, gm.constants.pBlock, true, true)
 	local collision_x1 = gm.variable_global_get("collision_x") - 2 * actor.image_xscale
 	local collision_y1 = gm.variable_global_get("collision_y")
 	actor:collision_line_advanced(collision_x1, collision_y1, collision_x1 - 10 * actor.image_xscale, actor.y + 400, gm.constants.pBlock, true, true)
@@ -455,12 +456,13 @@ objProbe:onCreate(function(inst)
 	data.lifetime_max = 120
 	data.lifetime = 120
 	inst.parent = -4
-	local height = 5300
+	local height = 5400
 	local offset = math.random(-200, 200)
 	local distance = GM.point_distance(inst.x + offset, inst.y - height, inst.x, inst.y)
 	local angle = math.deg(GM.arctan2((inst.y - height) - inst.y, inst.x - (inst.x + offset)))
 	parProbeTrailCircle:set_direction(angle, angle, 0, 0)
-	parProbeTrailLine:set_orientation(angle, angle, 0, 0, true)
+	parProbeTrailLine:set_direction(angle, angle, 0, 0)
+	parProbeTrailLine:set_orientation(angle, angle, 0, 0, false)
 	parProbeTrail:set_direction(angle, angle, 0, 0)
 	parProbeTrail:set_life(distance / 45 + 1, distance / 45 + 1, 0, 0)
 	parProbeTrail:create(inst.x + offset, inst.y - height)
@@ -484,7 +486,7 @@ objProbe:onStep(function(inst)
 		if gm._mod_net_isHost() then
 			local buff_shadow_clone = Buff.find("ror", "shadowClone")
 			for i=0, inst.parent:buff_stack_count(buff_shadow_clone) do
-				local attack = inst.parent:fire_explosion(inst.x, inst.y - 10, 192, 192, inst.parent:skill_get_damage(probe), gm.constants.sPilotBombardDrop, gm.constants.sSparks1)
+				local attack = inst.parent:fire_explosion(inst.x, inst.y - 10, 192, 192, inst.parent:skill_get_damage(probe), gm.constants.sEfBombExplode, gm.constants.sSparks1)
 				attack.attack_info:set_stun(1.5, Attack_Info.KNOCKBACK_DIR.right, Attack_Info.KNOCKBACK_KIND.none)
 				attack.attack_info.climb = i * 8
 				inst.parent:sound_play(gm.constants.wTurtleExplosion, 1, 0.6)
@@ -511,7 +513,7 @@ efPreview2:onDraw(function(self)
 	
 	if actor:get_active_skill(Skill.SLOT.primary).skill_id == priProbe.value then
 		if actor.callingprobe == 0 then
-			actor:collision_line_advanced(actor.x, actor.y + 10, actor.x + 200 * actor.image_xscale, actor.y + 10, gm.constants.pBlock, true, true)
+			actor:collision_line_advanced(actor.x, actor.y + 10, actor.x + 150 * actor.image_xscale, actor.y + 10, gm.constants.pBlock, true, true)
 			local collision_x1 = gm.variable_global_get("collision_x") - 2 * actor.image_xscale
 			local collision_y1 = gm.variable_global_get("collision_y")
 			actor:collision_line_advanced(collision_x1, collision_y1, collision_x1 - 10 * actor.image_xscale, actor.y + 400, gm.constants.pBlock, true, true)
