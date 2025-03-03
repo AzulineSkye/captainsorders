@@ -22,7 +22,7 @@
 		},
 	"captainC_1": {
 			"name": "Orbital Probe",
-			"description": "Request up to <y>3</c> Orbital Probes from the <y>UES Safe Travels</c>. Each probe deals <y>600% damage</c> and <y>stuns</c>."
+			"description": "Request an Orbital Probe from the <y>UES Safe Travels</c>, dealing <y>600% damage</c> and <y>stunning</c>."
 		},
 	"captainV": {
 			"name": "Beacon: Healing",
