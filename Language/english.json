@@ -3,7 +3,7 @@
 	"captain" : {
 		"name" : "Captain",
 		"nameUpper" : "CAPTAIN",
-		"description": "The <y>Captain</c> is a unique survivor that can control the battlefield with utility and damage - with help from the UES Safe Travels.",
+		"description": "The <y>Captain</c> is a unique survivor that can control the battlefield with utility and damage.",
 		"endQuote": "..and so he left, with a new tale to tell.",
 		}
 	},
@@ -18,11 +18,11 @@
 		},
 	"captainC": {
 			"name": "Orbital Probe",
-			"description": "Request up to <y>3</c> Orbital Probes from the <y>UES Safe Travels</c>. Each probe deals <y>600% damage</c> and <y>stuns</c>."
+			"description": "Request up to <y>3</c> Orbital Probes. Each probe deals <y>600% damage</c> and <y>stuns</c>."
 		},
 	"captainC_1": {
 			"name": "Orbital Probe",
-			"description": "Request an Orbital Probe from the <y>UES Safe Travels</c>, dealing <y>600% damage</c> and <y>stunning</c>."
+			"description": "Request an Orbital Probe, dealing <y>600% damage</c> and <y>stunning</c>."
 		},
 	"captainV": {
 			"name": "Beacon: Healing",
