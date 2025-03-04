@@ -4,9 +4,9 @@ local sprite_portrait_small	= Resources.sprite_load(NAMESPACE, "captainPortraitS
 local sprite_skills = Resources.sprite_load(NAMESPACE, "captainSkills", path.combine(PATH, "Sprites/skills.png"), 12)
 local sprite_idle = Resources.sprite_load(NAMESPACE, "captainIdle", path.combine(PATH, "Sprites/idle.png"), 1, 15, 20)
 local sprite_idle_half = Resources.sprite_load(NAMESPACE, "captainIdleHalf", path.combine(PATH, "Sprites/idleHalf.png"), 1, 15, 20)
-local sprite_walk = Resources.sprite_load(NAMESPACE, "captainWalk", path.combine(PATH, "Sprites/walk.png"), 8, 14, 20)
+local sprite_walk = Resources.sprite_load(NAMESPACE, "captainWalk", path.combine(PATH, "Sprites/walk.png"), 7, 12, 18)
 local sprite_walk_half = Resources.sprite_load(NAMESPACE, "captainWalkHalf", path.combine(PATH, "Sprites/walkHalf.png"), 8, 14, 20)
-local sprite_walk_back = Resources.sprite_load(NAMESPACE, "captainWalkBack", path.combine(PATH, "Sprites/walkBack.png"), 8, 14, 20)
+local sprite_walk_back = Resources.sprite_load(NAMESPACE, "captainWalkBack", path.combine(PATH, "Sprites/walkBack.png"), 7, 12, 18)
 local sprite_jump = Resources.sprite_load(NAMESPACE, "captainJump", path.combine(PATH, "Sprites/jump.png"), 1, 12, 20)
 local sprite_jump_half = Resources.sprite_load(NAMESPACE, "captainJumpHalf", path.combine(PATH, "Sprites/jumpHalf.png"), 1, 12, 20)
 local sprite_jump_peak = Resources.sprite_load(NAMESPACE, "captainJumpPeak", path.combine(PATH, "Sprites/jumpPeak.png"), 1, 12, 20)
@@ -49,7 +49,7 @@ cap:set_animations({
 	decoy = sprite_decoy,
 })
 
-cap:set_cape_offset(0, -8, 0, -12)
+cap:set_cape_offset(0, -8, 1, -2)
 cap:set_primary_color(Color.from_rgb(190, 186, 146))
 
 cap.sprite_loadout = sprite_loadout
@@ -193,7 +193,7 @@ efPreview1:onDraw(function(self)
 		local collision_y1 = gm.variable_global_get("collision_y")
 		gm.draw_set_colour(Color.from_hsv(0, 0, 100))
 		gm.draw_line_width(actor.x + 24 * actor.image_xscale, actor.y - 9, collision_x1, collision_y1, 1)
-		actor:collision_line_advanced(actor.x + 24 * actor.image_xscale, actor.y - 8, actor.x + xx * actor.image_xscale, actor.y - 8 - yy, gm.constants.pBlock, true, true)
+		actor:collision_line_advanced(actor.x + 24 * actor.image_xscale, actor.y - 9, actor.x + xx * actor.image_xscale, actor.y - 9 - yy, gm.constants.pBlock, true, true)
 		local collision_x2 = gm.variable_global_get("collision_x")
 		local collision_y2 = gm.variable_global_get("collision_y")
 		gm.draw_set_colour(Color.from_hsv(0, 0, 100))
@@ -600,18 +600,75 @@ stprobe:onGetInterruptPriority(function(actor, data)
 end)
 
 
+--Orbital Supply Beacon
+local beacon = cap:get_special()
+beacon:set_skill_icon(sprite_skills, 6)
+beacon.cooldown = 0
+beacon.damage = 12
+beacon.require_key_press = true
+beacon:clear_callbacks()
+
+local stbeacon = State.new(NAMESPACE, "orbitalSupplyBeacon")
+stbeacon:clear_callbacks()
+
+beacon:onActivate(function(actor)
+	actor:enter_state(stbeacon)
+end)
+
+
 
 --Beacon: Healing
-local healing = cap:get_special()
+local healing = Skill.new(NAMESPACE, "captainBeaconHealing")
 healing:set_skill_icon(sprite_skills, 8)
-healing.cooldown = 0
-healing.damage = 12
-healing.require_key_press = true
 healing:clear_callbacks()
 
-local sthealing = State.new(NAMESPACE, "beaconHealing")
-sthealing:clear_callbacks()
+-- create a skill slot that will show up in the misc slot selections
+local unlockableHealing = gm["@@NewGMLObject@@"](gm.constants.SurvivorSkillLoadoutUnlockable)
+unlockableHealing.skill_id = healing.value
 
-healing:onActivate(function(actor)
-	actor:enter_state(sthealing)
-end)
+--Beacon: Shocking
+local shocking = Skill.new(NAMESPACE, "captainBeaconShocking")
+shocking:set_skill_icon(sprite_skills, 9)
+shocking:clear_callbacks()
+
+local unlockableShocking = gm["@@NewGMLObject@@"](gm.constants.SurvivorSkillLoadoutUnlockable)
+unlockableShocking.skill_id = shocking.value
+
+--Beacon: Resupply
+local resupply = Skill.new(NAMESPACE, "captainBeaconResupply")
+resupply:set_skill_icon(sprite_skills, 10)
+resupply:clear_callbacks()
+
+local unlockableResupply = gm["@@NewGMLObject@@"](gm.constants.SurvivorSkillLoadoutUnlockable)
+unlockableResupply.skill_id = resupply.value
+
+--Beacon: Hacking
+local hacking = Skill.new(NAMESPACE, "captainBeaconHacking")
+hacking:set_skill_icon(sprite_skills, 11)
+hacking:clear_callbacks()
+
+local unlockableHacking = gm["@@NewGMLObject@@"](gm.constants.SurvivorSkillLoadoutUnlockable)
+unlockableHacking.skill_id = hacking.value
+
+
+-- create the first misc slot selection
+local misc1 = gm["@@NewGMLObject@@"](gm.constants.SurvivorBaseLoadoutFamily)
+misc1.family_name = "captainBeaconMisc1" -- must be unique, used for multiplayer syncing
+gm.array_resize(misc1.elements, 0) -- clear the misc slot selection
+ -- add the healing beacon skill slot to out misc slot selection, then the shocking, etc
+gm.array_push(misc1.elements, unlockableHealing)
+gm.array_push(misc1.elements, unlockableShocking)
+gm.array_push(misc1.elements, unlockableResupply)
+gm.array_push(misc1.elements, unlockableHacking)
+cap.all_skill_families:resize(4) -- limit the size so that it doesnt start duplicating itself
+cap.all_skill_families:push(misc1) -- 
+
+local misc2 = gm["@@NewGMLObject@@"](gm.constants.SurvivorBaseLoadoutFamily)
+misc2.family_name = "captainBeaconMisc2"
+gm.array_resize(misc2.elements, 0)
+gm.array_push(misc2.elements, unlockableHealing)
+gm.array_push(misc2.elements, unlockableShocking)
+gm.array_push(misc2.elements, unlockableResupply)
+gm.array_push(misc2.elements, unlockableHacking)
+cap.all_skill_families:resize(5)
+cap.all_skill_families:push(misc2)

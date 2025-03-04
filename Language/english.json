@@ -3,7 +3,7 @@
 	"captain" : {
 		"name" : "Captain",
 		"nameUpper" : "CAPTAIN",
-		"description": "The <y>Captain</c> is a unique survivor that can control the battlefield with utility and damage.",
+		"description": "The <y>Captain</c> is a unique survivor that can provide utility and support on the battlefield with his <y>Orbital Supply Beacons</c> and <y>Defensive Microbots</c>. Combining a <y>Power Tazer</c> with <y>Orbital Probe</c> strikes will devastate most crowds with ease, while shots from your trusty <y>Vulcan Shotgun</c> can help with clearing up whatever remains.",
 		"endQuote": "..and so he left, with a new tale to tell.",
 		}
 	},
@@ -25,15 +25,31 @@
 			"description": "Request an Orbital Probe, dealing <y>600% damage</c> and <y>stunning</c>."
 		},
 	"captainV": {
+			"name": "Orbital Supply Beacon",
+			"description": "Request a <b>permanent</c> Supply Beacon. Can only be requested <b>twice per stage</c>."
+		},
+	"captainBeaconHealing": {
 			"name": "Beacon: Healing",
-			"description": "Request a <b>permanent</c> Healing Beacon, <g>healing</c> all nearby allies for <g>10%</c> of their <g>maximum health</c> every second. Can only be requested <b>once per stage</c>."
+			"description": "<g>Heal</c> all nearby allies for <g>10%</c> of their <g>maximum health</c> every second."
+		},
+	"captainBeaconShocking": {
+			"name": "Beacon: Shocking",
+			"description": "Periodically <y>shock</c> all nearby enemies, immobilizing them."
+		},
+	"captainBeaconResupply": {
+			"name": "Beacon: Resupply",
+			"description": "<b>Recharge Equipment</c> on use."
+		},
+	"captainBeaconHacking": {
+			"name": "Beacon: Hacking",
+			"description": "<b>Hack</c> all nearby purchasables to a cost of <b>$0</c> over time."
 		},
 	},
 "item" : {
 	"defensiveMicrobots" : {
 		"name" : "Defensive Microbots",
 		"pickup": "Shoot down nearby projectiles. Recharge rate scales with attack speed.",
-		"description": "Shoot down projectiles within <y>20m</c> <c_stack>(+10m per stack)</c> every <y>0.5 seconds</c>. <b>Recharge rate scales with attack speed</c>.",
+		"description": "Shoot down projectiles within <y>20m</c> <c_stack>(+10m per stack)</c> every <y>0.5 seconds</c>. <b>Recharge rate scales with the amount of drones you have</c>.",
 		"destination": "<r>TOP SECRET</c>",
 		"date": "08/11/2056",
 		"story": "'Captain, look out!' \n\nA voice cried from the old man's periphery. But he knew he was in no danger – with a chirp, his companion microbots activated and fired, disintegrating the fireball. Just as it did every time. \n\nQuickly spinning on his heel, the old man fired his shotgun, decapitating the Lemurian with a swift and pronounced BOOM. \n\n'I'd worry more about your own safety than mine, private.'",

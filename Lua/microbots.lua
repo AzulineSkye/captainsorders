@@ -62,7 +62,7 @@ bots:onPreStep(function(actor, stack)
 	local radius = 125 + 125 * stack
 	local deletedbullet = nil
 	
-    if actor.microbotscharge < math.min(30, 60 / (2 * actor.attack_speed)) then
+    if actor.microbotscharge < math.min(30, 60 / (2 * (1 + 0.25 * actor.drone_count))) then
         actor.microbotscharge = actor.microbotscharge + 1
     else
 		local bullets = Instance.find_all(Instance.projectiles)
