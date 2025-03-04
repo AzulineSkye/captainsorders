@@ -33,7 +33,7 @@
 	"defensiveMicrobots" : {
 		"name" : "Defensive Microbots",
 		"pickup": "Shoot down nearby projectiles. Recharge rate scales with attack speed.",
-		"description": "Shoot down <y>1</c> <c_stack>(+1 per stack)</c> projectiles within <y>20m</c> every <y>0.5 seconds</c>. <b>Recharge rate scales with attack speed</c>.",
+		"description": "Shoot down projectiles within <y>20m</c> <c_stack>(+10m per stack)</c> every <y>0.5 seconds</c>. <b>Recharge rate scales with attack speed</c>.",
 		"destination": "<r>TOP SECRET</c>",
 		"date": "08/11/2056",
 		"story": "'Captain, look out!' \n\nA voice cried from the old man's periphery. But he knew he was in no danger – with a chirp, his companion microbots activated and fired, disintegrating the fireball. Just as it did every time. \n\nQuickly spinning on his heel, the old man fired his shotgun, decapitating the Lemurian with a swift and pronounced BOOM. \n\n'I'd worry more about your own safety than mine, private.'",

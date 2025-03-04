@@ -81,7 +81,12 @@ cap:onInit(function(actor)
 	
 	actor.charging_shotgun = 0
 	actor.callingprobe = 0
+	if not actor.microbotsrecieved then
+		actor:item_give(Item.find(NAMESPACE, "defensiveMicrobots"))
+		actor.microbotsrecieved = 1
+	end
 end)
+
 
 
 --Particles
@@ -334,53 +339,53 @@ shock:onApply(function(actor, stack)
 	data.captainshocktimer = 5 * 60
 end)
 
-objTazer:onCreate(function(inst)
-	inst.image_speed = 0.25
-	inst.speed = 20
-	inst.parent = -4
-	inst.image_blend = 16777215
+objTazer:onCreate(function(self)
+	self.image_speed = 0.25
+	self.speed = 20
+	self.parent = -4
+	self.image_blend = 16777215
 
-	local data = inst:get_data()
+	local data = self:get_data()
 	data.lifetime = 60
 end)
 
-objTazer:onStep(function(inst)
-	local data = inst:get_data()
+objTazer:onStep(function(self)
+	local data = self:get_data()
 	
-	if not Instance.exists(inst.parent) or data.lifetime <= 0 then
-		inst:sound_play(gm.constants.wChainLightning, 1, 0.8)
+	if not Instance.exists(self.parent) or data.lifetime <= 0 then
+		self:sound_play(gm.constants.wChainLightning, 1, 0.8)
 		if gm._mod_net_isHost() then
-			local attack = inst.parent:fire_explosion(inst.x, inst.y, 100, 100, inst.parent:skill_get_damage(tazer), gm.constants.sEfArtiStarExplode2, gm.constants.sSparks24)
+			local attack = self.parent:fire_explosion(self.x, self.y, 100, 100, self.parent:skill_get_damage(tazer), gm.constants.sEfArtiStarExplode2, gm.constants.sSparks24)
 			attack.attack_info:set_stun(5, Attack_Info.KNOCKBACK_DIR.right, Attack_Info.KNOCKBACK_KIND.none)
 		end
-		inst:destroy()
+		self:destroy()
 		return
 	end
 	
 	data.lifetime = data.lifetime - 1
 	
-	if inst:is_colliding(gm.constants.pBlock) then
-		inst.direction = inst.direction + 180
-		inst.image_xscale = -inst.image_xscale
+	if self:is_colliding(gm.constants.pBlock) then
+		self.direction = self.direction + 180
+		self.image_xscale = -self.image_xscale
 	else
-		parTazer:create(inst.x + 6 * inst.image_xscale, inst.y - 1, 1, Particle.SYSTEM.below)
-		parTazer:create(inst.x + 6 * inst.image_xscale, inst.y + 3, 1, Particle.SYSTEM.below)
+		parTazer:create(self.x + 6 * self.image_xscale, self.y - 1, 1, Particle.SYSTEM.below)
+		parTazer:create(self.x + 6 * self.image_xscale, self.y + 3, 1, Particle.SYSTEM.below)
 	end
 	
-	local actors = inst:get_collisions(gm.constants.pActorCollisionBase)
+	local actors = self:get_collisions(gm.constants.pActorCollisionBase)
 
 	for _, actor in ipairs(actors) do
-		if inst:attack_collision_canhit(actor) then
-			inst:sound_play(gm.constants.wChainLightning, 1, 0.8)
+		if self:attack_collision_canhit(actor) then
+			self:sound_play(gm.constants.wChainLightning, 1, 0.8)
 			if gm._mod_net_isHost() then
 				local buff_shadow_clone = Buff.find("ror", "shadowClone")
-				for i=0, inst.parent:buff_stack_count(buff_shadow_clone) do
-					local attack = inst.parent:fire_explosion(inst.x, inst.y, 120, 120, inst.parent:skill_get_damage(tazer), gm.constants.sEfArtiStarExplode2, gm.constants.sEfGoldSparkleBig)
+				for i=0, self.parent:buff_stack_count(buff_shadow_clone) do
+					local attack = self.parent:fire_explosion(self.x, self.y, 120, 120, self.parent:skill_get_damage(tazer), gm.constants.sEfArtiStarExplode2, gm.constants.sEfGoldSparkleBig)
 					attack.attack_info:set_stun(5, Attack_Info.KNOCKBACK_DIR.right, Attack_Info.KNOCKBACK_KIND.none)
 					attack.attack_info.climb = i * 8
 				end
 			end
-			inst:destroy()
+			self:destroy()
 		end
 	end
 end)
@@ -451,49 +456,49 @@ probe:onActivate(function(actor)
 	actor:enter_state(stprobe)
 end)
 
-objProbe:onCreate(function(inst)
-	local data = inst:get_data()
+objProbe:onCreate(function(self)
+	local data = self:get_data()
 	data.lifetime_max = 120
 	data.lifetime = 120
-	inst.parent = -4
+	self.parent = -4
 	local height = 5400
 	local offset = math.random(-200, 200)
-	local distance = GM.point_distance(inst.x + offset, inst.y - height, inst.x, inst.y)
-	local angle = math.deg(GM.arctan2((inst.y - height) - inst.y, inst.x - (inst.x + offset)))
+	local distance = GM.point_distance(self.x + offset, self.y - height, self.x, self.y)
+	local angle = math.deg(GM.arctan2((self.y - height) - self.y, self.x - (self.x + offset)))
 	parProbeTrailCircle:set_direction(angle, angle, 0, 0)
 	parProbeTrailLine:set_direction(angle, angle, 0, 0)
 	parProbeTrailLine:set_orientation(angle, angle, 0, 0, false)
 	parProbeTrail:set_direction(angle, angle, 0, 0)
 	parProbeTrail:set_life(distance / 45 + 1, distance / 45 + 1, 0, 0)
-	parProbeTrail:create(inst.x + offset, inst.y - height)
+	parProbeTrail:create(self.x + offset, self.y - height)
 	parProbeTrail2:set_direction(angle, angle, 0, 0)
 	parProbeTrail2:set_life(distance / 45 + 1, distance / 45 + 1, 0, 0)
-	parProbeTrail2:create(inst.x + offset, inst.y - height)
+	parProbeTrail2:create(self.x + offset, self.y - height)
 end)
 
-objProbe:onStep(function(inst)
-	local data = inst:get_data()
+objProbe:onStep(function(self)
+	local data = self:get_data()
 	
 	if data.lifetime > 0 then
 		data.lifetime = data.lifetime - 1
 	end
 	
 	if data.lifetime % 5 == 0 and data.lifetime > 0 then
-		parCall:create(inst.x, inst.y, 1, Particle.SYSTEM.above)
+		parCall:create(self.x, self.y, 1, Particle.SYSTEM.above)
 	end
 	
 	if data.lifetime <= 0 then
 		if gm._mod_net_isHost() then
 			local buff_shadow_clone = Buff.find("ror", "shadowClone")
-			for i=0, inst.parent:buff_stack_count(buff_shadow_clone) do
-				local attack = inst.parent:fire_explosion(inst.x, inst.y - 10, 192, 192, inst.parent:skill_get_damage(probe), gm.constants.sEfBombExplode, gm.constants.sSparks1)
+			for i=0, self.parent:buff_stack_count(buff_shadow_clone) do
+				local attack = self.parent:fire_explosion(self.x, self.y - 10, 192, 192, self.parent:skill_get_damage(probe), gm.constants.sEfBombExplode, gm.constants.sSparks1)
 				attack.attack_info:set_stun(1.5, Attack_Info.KNOCKBACK_DIR.right, Attack_Info.KNOCKBACK_KIND.none)
 				attack.attack_info.climb = i * 8
-				inst.parent:sound_play(gm.constants.wTurtleExplosion, 1, 0.6)
-				inst.parent:sound_play(gm.constants.wWormExplosion, 1, 0.8)
+				self.parent:sound_play(gm.constants.wTurtleExplosion, 1, 0.6)
+				self.parent:sound_play(gm.constants.wWormExplosion, 1, 0.8)
 			end
-			inst:screen_shake(5)
-			inst:destroy()
+			self:screen_shake(5)
+			self:destroy()
 		end
 	end
 end)
@@ -535,6 +540,8 @@ stprobe:onEnter(function(actor, data)
 	actor.image_index2 = 0
 	data.timer = 0
 	data.call_sound = -1
+	actor.callingprobe = 0
+	actor:sound_play(gm.constants.wMercenary_EviscerateActivate, 1, 1)
 	actor:add_skill_override(Skill.SLOT.primary, priProbe, 10)
 	local preview = efPreview2:create(actor.x, actor.y)
 	preview.parent = actor
