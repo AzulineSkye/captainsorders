@@ -1,7 +1,7 @@
 local sprite_loadout = Resources.sprite_load(NAMESPACE, "captainSelect", path.combine(PATH, "Sprites/select.png"), 20, 28, 0)
 local sprite_portrait = Resources.sprite_load(NAMESPACE, "captainPortrait", path.combine(PATH, "Sprites/portrait.png"), 2)
 local sprite_portrait_small	= Resources.sprite_load(NAMESPACE, "captainPortraitSmall", path.combine(PATH, "Sprites/portraitSmall.png"))
-local sprite_skills = Resources.sprite_load(NAMESPACE, "captainSkills", path.combine(PATH, "Sprites/skills.png"), 12)
+local sprite_skills = Resources.sprite_load(NAMESPACE, "captainSkills", path.combine(PATH, "Sprites/skills.png"), 13)
 local sprite_idle = Resources.sprite_load(NAMESPACE, "captainIdle", path.combine(PATH, "Sprites/idle.png"), 1, 15, 20)
 local sprite_idle_half = Resources.sprite_load(NAMESPACE, "captainIdleHalf", path.combine(PATH, "Sprites/idleHalf.png"), 1, 15, 20)
 local sprite_walk = Resources.sprite_load(NAMESPACE, "captainWalk", path.combine(PATH, "Sprites/walk.png"), 7, 12, 18)
@@ -619,7 +619,7 @@ end)
 
 --Beacon: Healing
 local healing = Skill.new(NAMESPACE, "captainBeaconHealing")
-healing:set_skill_icon(sprite_skills, 8)
+healing:set_skill_icon(sprite_skills, 9)
 healing:clear_callbacks()
 
 -- create a skill slot that will show up in the misc slot selections
@@ -628,7 +628,7 @@ unlockableHealing.skill_id = healing.value
 
 --Beacon: Shocking
 local shocking = Skill.new(NAMESPACE, "captainBeaconShocking")
-shocking:set_skill_icon(sprite_skills, 9)
+shocking:set_skill_icon(sprite_skills, 10)
 shocking:clear_callbacks()
 
 local unlockableShocking = gm["@@NewGMLObject@@"](gm.constants.SurvivorSkillLoadoutUnlockable)
@@ -636,7 +636,7 @@ unlockableShocking.skill_id = shocking.value
 
 --Beacon: Resupply
 local resupply = Skill.new(NAMESPACE, "captainBeaconResupply")
-resupply:set_skill_icon(sprite_skills, 10)
+resupply:set_skill_icon(sprite_skills, 11)
 resupply:clear_callbacks()
 
 local unlockableResupply = gm["@@NewGMLObject@@"](gm.constants.SurvivorSkillLoadoutUnlockable)
@@ -644,7 +644,7 @@ unlockableResupply.skill_id = resupply.value
 
 --Beacon: Hacking
 local hacking = Skill.new(NAMESPACE, "captainBeaconHacking")
-hacking:set_skill_icon(sprite_skills, 11)
+hacking:set_skill_icon(sprite_skills, 12)
 hacking:clear_callbacks()
 
 local unlockableHacking = gm["@@NewGMLObject@@"](gm.constants.SurvivorSkillLoadoutUnlockable)
