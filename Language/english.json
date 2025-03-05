@@ -10,7 +10,7 @@
 "skill" : {
 	"captainZ": {
 			"name": "Vulcan Shotgun",
-			"description": "Fire a blast of pellets for <y>8x75% damage</c>. Charging the attack narrows the <b>spread</c> and increases <b>range</c>."
+			"description": "Fire a blast of pellets for <y>8x70% damage</c>. Charging the attack narrows the <b>spread</c> and increases <b>range</c>."
 		},
 	"captainX": {
 			"name": "Power Tazer",
@@ -18,11 +18,11 @@
 		},
 	"captainC": {
 			"name": "Orbital Probe",
-			"description": "Request up to <y>3</c> Orbital Probes. Each probe deals <y>600% damage</c> and <y>stuns</c>."
+			"description": "Request up to <y>3</c> Orbital Probes. Each probe deals <y>500% damage</c> and <y>stuns</c>."
 		},
 	"captainC_1": {
 			"name": "Orbital Probe",
-			"description": "Request an Orbital Probe, dealing <y>600% damage</c> and <y>stunning</c>."
+			"description": "Request an Orbital Probe, dealing <y>500% damage</c> and <y>stunning</c>."
 		},
 	"captainV": {
 			"name": "Orbital Supply Beacon",
@@ -32,7 +32,15 @@
 			"name": "Beacon: Healing",
 			"description": "<g>Heal</c> all nearby allies for <g>10%</c> of their <g>maximum health</c> every second."
 		},
+	"captainBeaconHealing_1": {
+			"name": "Beacon: Healing",
+			"description": "<g>Heal</c> all nearby allies for <g>10%</c> of their <g>maximum health</c> every second."
+		},
 	"captainBeaconShocking": {
+			"name": "Beacon: Shocking",
+			"description": "Periodically <y>shock</c> all nearby enemies, immobilizing them."
+		},
+	"captainBeaconShocking_1": {
 			"name": "Beacon: Shocking",
 			"description": "Periodically <y>shock</c> all nearby enemies, immobilizing them."
 		},
@@ -40,7 +48,15 @@
 			"name": "Beacon: Resupply",
 			"description": "<b>Recharge Equipment</c> on use."
 		},
+	"captainBeaconResupply_1": {
+			"name": "Beacon: Resupply",
+			"description": "<b>Recharge Equipment</c> on use."
+		},
 	"captainBeaconHacking": {
+			"name": "Beacon: Hacking",
+			"description": "<b>Hack</c> all nearby purchasables to a cost of <b>$0</c> over time."
+		},
+	"captainBeaconHacking_1": {
 			"name": "Beacon: Hacking",
 			"description": "<b>Hack</c> all nearby purchasables to a cost of <b>$0</c> over time."
 		},

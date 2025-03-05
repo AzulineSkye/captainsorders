@@ -7,11 +7,11 @@ local sprite_idle_half = Resources.sprite_load(NAMESPACE, "captainIdleHalf", pat
 local sprite_walk = Resources.sprite_load(NAMESPACE, "captainWalk", path.combine(PATH, "Sprites/walk.png"), 8, 12, 18)
 local sprite_walk_half = Resources.sprite_load(NAMESPACE, "captainWalkHalf", path.combine(PATH, "Sprites/walkHalf.png"), 8, 14, 20)
 local sprite_walk_back = Resources.sprite_load(NAMESPACE, "captainWalkBack", path.combine(PATH, "Sprites/walkBack.png"), 8, 12, 18)
-local sprite_jump = Resources.sprite_load(NAMESPACE, "captainJump", path.combine(PATH, "Sprites/jump.png"), 1, 12, 20)
+local sprite_jump = Resources.sprite_load(NAMESPACE, "captainJump", path.combine(PATH, "Sprites/jump.png"), 1, 15, 20)
 local sprite_jump_half = Resources.sprite_load(NAMESPACE, "captainJumpHalf", path.combine(PATH, "Sprites/jumpHalf.png"), 1, 12, 20)
-local sprite_jump_peak = Resources.sprite_load(NAMESPACE, "captainJumpPeak", path.combine(PATH, "Sprites/jumpPeak.png"), 1, 12, 20)
+local sprite_jump_peak = Resources.sprite_load(NAMESPACE, "captainJumpPeak", path.combine(PATH, "Sprites/jumpPeak.png"), 1, 15, 20)
 local sprite_jump_peak_half	= Resources.sprite_load(NAMESPACE, "captainJumpPeakHalf", path.combine(PATH, "Sprites/jumpPeakHalf.png"), 1, 12, 20)
-local sprite_fall = Resources.sprite_load(NAMESPACE, "captainFall", path.combine(PATH, "Sprites/fall.png"), 1, 12, 20)
+local sprite_fall = Resources.sprite_load(NAMESPACE, "captainFall", path.combine(PATH, "Sprites/fall.png"), 1, 15, 20)
 local sprite_fall_half = Resources.sprite_load(NAMESPACE, "captainFallHalf", path.combine(PATH, "Sprites/fallHalf.png"), 1, 12, 20)
 local sprite_climb = Resources.sprite_load(NAMESPACE, "captainClimb", path.combine(PATH, "Sprites/climb.png"), 2, 6, 12)
 local sprite_death = Resources.sprite_load(NAMESPACE, "captainDeath", path.combine(PATH, "Sprites/death.png"), 8, 14, 28)
@@ -81,6 +81,7 @@ cap:onInit(function(actor)
 	
 	actor.charging_shotgun = 0
 	actor.callingprobe = 0
+	actor.closebeaconmenu = 0
 	if not actor.microbotsrecieved then
 		actor:item_give(Item.find(NAMESPACE, "defensiveMicrobots"))
 		actor.microbotsrecieved = 1
@@ -160,13 +161,73 @@ efPreview2:clear_callbacks()
 local objProbe = Object.new(NAMESPACE, "efCaptainProbe")
 objProbe:clear_callbacks()
 
+local efPreview3 = Object.new(NAMESPACE, "efCaptainBeaconPreview")
+efPreview3:clear_callbacks()
+
+
+--Beacon: Healing
+local healing = Skill.new(NAMESPACE, "captainBeaconHealing")
+healing:set_skill_icon(sprite_skills, 9)
+healing:clear_callbacks()
+
+--create a skill slot that will show up in the misc slot selections
+local unlockableHealing = gm["@@NewGMLObject@@"](gm.constants.SurvivorSkillLoadoutUnlockable)
+unlockableHealing.skill_id = healing.value
+
+--Beacon: Shocking
+local shocking = Skill.new(NAMESPACE, "captainBeaconShocking")
+shocking:set_skill_icon(sprite_skills, 10)
+shocking:clear_callbacks()
+
+local unlockableShocking = gm["@@NewGMLObject@@"](gm.constants.SurvivorSkillLoadoutUnlockable)
+unlockableShocking.skill_id = shocking.value
+
+--Beacon: Resupply
+local resupply = Skill.new(NAMESPACE, "captainBeaconResupply")
+resupply:set_skill_icon(sprite_skills, 11)
+resupply:clear_callbacks()
+
+local unlockableResupply = gm["@@NewGMLObject@@"](gm.constants.SurvivorSkillLoadoutUnlockable)
+unlockableResupply.skill_id = resupply.value
+
+--Beacon: Hacking
+local hacking = Skill.new(NAMESPACE, "captainBeaconHacking")
+hacking:set_skill_icon(sprite_skills, 12)
+hacking:clear_callbacks()
+
+local unlockableHacking = gm["@@NewGMLObject@@"](gm.constants.SurvivorSkillLoadoutUnlockable)
+unlockableHacking.skill_id = hacking.value
+
+
+--create the first misc slot selection
+local misc1 = gm["@@NewGMLObject@@"](gm.constants.SurvivorBaseLoadoutFamily)
+misc1.family_name = "captainBeaconMisc1" --must be unique, used for multiplayer syncing
+gm.array_resize(misc1.elements, 0) --clear the misc slot selection
+--add the healing beacon skill slot to out misc slot selection, then the shocking, etc
+gm.array_push(misc1.elements, unlockableHealing)
+gm.array_push(misc1.elements, unlockableShocking)
+gm.array_push(misc1.elements, unlockableResupply)
+gm.array_push(misc1.elements, unlockableHacking)
+cap.all_skill_families:resize(4) --limit the size so that it doesnt start duplicating itself
+cap.all_skill_families:push(misc1)
+
+local misc2 = gm["@@NewGMLObject@@"](gm.constants.SurvivorBaseLoadoutFamily)
+misc2.family_name = "captainBeaconMisc2"
+gm.array_resize(misc2.elements, 0)
+gm.array_push(misc2.elements, unlockableHealing)
+gm.array_push(misc2.elements, unlockableShocking)
+gm.array_push(misc2.elements, unlockableResupply)
+gm.array_push(misc2.elements, unlockableHacking)
+cap.all_skill_families:resize(5)
+cap.all_skill_families:push(misc2)
+
 
 
 --Vulcan Shotgun
 local vulcan = cap:get_primary()
 vulcan:set_skill_icon(sprite_skills, 0)
 vulcan.cooldown = 60
-vulcan.damage = 0.75
+vulcan.damage = 0.7
 vulcan.required_interrupt_priority = State.ACTOR_STATE_INTERRUPT_PRIORITY.any
 vulcan.require_key_press = true
 vulcan.allow_buffered_input = true
@@ -325,6 +386,7 @@ local tazer = cap:get_secondary()
 tazer:set_skill_icon(sprite_skills, 1)
 tazer.cooldown = 6 * 60
 tazer.damage = 0.6
+tazer.require_key_press = true
 tazer:clear_callbacks()
 
 local sttazer = State.new(NAMESPACE, "powerTazer")
@@ -444,7 +506,7 @@ end)
 local probe = cap:get_utility()
 probe:set_skill_icon(sprite_skills, 3)
 probe.cooldown = 11 * 60
-probe.damage = 6.0
+probe.damage = 5.0
 probe.is_utility = true
 probe.required_interrupt_priority = State.ACTOR_STATE_INTERRUPT_PRIORITY.any
 probe:clear_callbacks()
@@ -600,12 +662,103 @@ stprobe:onGetInterruptPriority(function(actor, data)
 end)
 
 
+
 --Orbital Supply Beacon
+local priHealing = Skill.new(NAMESPACE, "captainBeaconHealing_1")
+priHealing:set_skill_icon(sprite_skills, 9)
+priHealing.require_key_press = true
+priHealing.auto_restock = false
+priHealing:clear_callbacks()
+
+priHealing:onActivate(function(actor)
+	actor.callingbeacon = 1
+	actor.closebeaconmenu = 1
+	actor.image_index2 = 0
+	actor.sprite_index2 = sprite_shoot4
+	actor:sound_play(gm.constants.wHANDShoot2_1, 1, 0.9 + math.random() * 0.1)
+	actor:collision_line_advanced(actor.x, actor.y + 10, actor.x + 150 * actor.image_xscale, actor.y + 10, gm.constants.pBlock, true, true)
+	local collision_x1 = gm.variable_global_get("collision_x") - 2 * actor.image_xscale
+	local collision_y1 = gm.variable_global_get("collision_y")
+	actor:collision_line_advanced(collision_x1, collision_y1, collision_x1 - 10 * actor.image_xscale, actor.y + 400, gm.constants.pBlock, true, true)
+	local collision_x2 = gm.variable_global_get("collision_x")
+	local collision_y2 = gm.variable_global_get("collision_y")
+	--local oProbe = objProbe:create(collision_x2, collision_y2)
+	--oProbe.parent = actor
+end)
+
+local priShocking = Skill.new(NAMESPACE, "captainBeaconShocking_1")
+priShocking:set_skill_icon(sprite_skills, 10)
+priShocking.require_key_press = true
+priShocking.auto_restock = false
+priShocking:clear_callbacks()
+
+priShocking:onActivate(function(actor)
+	actor.callingbeacon = 1
+	actor.closebeaconmenu = 1
+	actor.image_index2 = 0
+	actor.sprite_index2 = sprite_shoot4
+	actor:sound_play(gm.constants.wHANDShoot2_1, 1, 0.9 + math.random() * 0.1)
+	actor:collision_line_advanced(actor.x, actor.y + 10, actor.x + 150 * actor.image_xscale, actor.y + 10, gm.constants.pBlock, true, true)
+	local collision_x1 = gm.variable_global_get("collision_x") - 2 * actor.image_xscale
+	local collision_y1 = gm.variable_global_get("collision_y")
+	actor:collision_line_advanced(collision_x1, collision_y1, collision_x1 - 10 * actor.image_xscale, actor.y + 400, gm.constants.pBlock, true, true)
+	local collision_x2 = gm.variable_global_get("collision_x")
+	local collision_y2 = gm.variable_global_get("collision_y")
+	--local oProbe = objProbe:create(collision_x2, collision_y2)
+	--oProbe.parent = actor
+end)
+
+local priResupply = Skill.new(NAMESPACE, "captainBeaconResupply_1")
+priResupply:set_skill_icon(sprite_skills, 11)
+priResupply.require_key_press = true
+priResupply.auto_restock = false
+priResupply:clear_callbacks()
+
+priResupply:onActivate(function(actor)
+	actor.callingbeacon = 1
+	actor.closebeaconmenu = 1
+	actor.image_index2 = 0
+	actor.sprite_index2 = sprite_shoot4
+	actor:sound_play(gm.constants.wHANDShoot2_1, 1, 0.9 + math.random() * 0.1)
+	actor:collision_line_advanced(actor.x, actor.y + 10, actor.x + 150 * actor.image_xscale, actor.y + 10, gm.constants.pBlock, true, true)
+	local collision_x1 = gm.variable_global_get("collision_x") - 2 * actor.image_xscale
+	local collision_y1 = gm.variable_global_get("collision_y")
+	actor:collision_line_advanced(collision_x1, collision_y1, collision_x1 - 10 * actor.image_xscale, actor.y + 400, gm.constants.pBlock, true, true)
+	local collision_x2 = gm.variable_global_get("collision_x")
+	local collision_y2 = gm.variable_global_get("collision_y")
+	--local oProbe = objProbe:create(collision_x2, collision_y2)
+	--oProbe.parent = actor
+end)
+
+local priHacking = Skill.new(NAMESPACE, "captainBeaconHacking_1")
+priHacking:set_skill_icon(sprite_skills, 12)
+priHacking.require_key_press = true
+priHacking.auto_restock = false
+priHacking:clear_callbacks()
+
+priHacking:onActivate(function(actor)
+	actor.callingbeacon = 1
+	actor.closebeaconmenu = 1
+	actor.image_index2 = 0
+	actor.sprite_index2 = sprite_shoot4
+	actor:sound_play(gm.constants.wHANDShoot2_1, 1, 0.9 + math.random() * 0.1)
+	actor:collision_line_advanced(actor.x, actor.y + 10, actor.x + 150 * actor.image_xscale, actor.y + 10, gm.constants.pBlock, true, true)
+	local collision_x1 = gm.variable_global_get("collision_x") - 2 * actor.image_xscale
+	local collision_y1 = gm.variable_global_get("collision_y")
+	actor:collision_line_advanced(collision_x1, collision_y1, collision_x1 - 10 * actor.image_xscale, actor.y + 400, gm.constants.pBlock, true, true)
+	local collision_x2 = gm.variable_global_get("collision_x")
+	local collision_y2 = gm.variable_global_get("collision_y")
+	--local oProbe = objProbe:create(collision_x2, collision_y2)
+	--oProbe.parent = actor
+end)
+
 local beacon = cap:get_special()
 beacon:set_skill_icon(sprite_skills, 6)
 beacon.cooldown = 0
-beacon.damage = 12
+beacon.damage = 10
+beacon.is_primary = true
 beacon.require_key_press = true
+beacon.required_interrupt_priority = State.ACTOR_STATE_INTERRUPT_PRIORITY.any
 beacon:clear_callbacks()
 
 local stbeacon = State.new(NAMESPACE, "orbitalSupplyBeacon")
@@ -615,60 +768,112 @@ beacon:onActivate(function(actor)
 	actor:enter_state(stbeacon)
 end)
 
+efPreview3:onDraw(function(self)
+	local actor = self.parent
+	if actor.closebeaconmenu == 0 and actor.callingbeacon == 0 then
+		actor:collision_line_advanced(actor.x, actor.y + 10, actor.x + 150 * actor.image_xscale, actor.y + 10, gm.constants.pBlock, true, true)
+		local collision_x1 = gm.variable_global_get("collision_x") - 2 * actor.image_xscale
+		local collision_y1 = gm.variable_global_get("collision_y")
+		actor:collision_line_advanced(collision_x1, collision_y1, collision_x1 - 10 * actor.image_xscale, actor.y + 400, gm.constants.pBlock, true, true)
+		local collision_x2 = gm.variable_global_get("collision_x")
+		local collision_y2 = gm.variable_global_get("collision_y")
+		gm.draw_set_colour(Color.from_hsv(0, 0, 100))
+		gm.draw_line_width(collision_x2, collision_y2, collision_x2, collision_y2 - 600, 1)
+		gm.draw_circle(collision_x2, collision_y2, 200, true)
+	else
+		self:destroy()
+	end
+end)
 
+stbeacon:onEnter(function(actor, data)
+	local loadout = Instance.find(gm.constants.oInit).player:get(actor.player_id).loadout_selection
+	local beacon1 = loadout.get_family_choice_index(loadout, loadout, "captainBeaconMisc1")
+	local beacon2 = loadout.get_family_choice_index(loadout, loadout, "captainBeaconMisc2")
+	
+	actor:skill_util_strafe_init()
+	actor:skill_util_strafe_turn_init()
+	actor.sprite_index2 = sprite_call
+	actor.image_index2 = 0
+	data.timer = 0
+	data.call_sound = -1
+	actor.callingbeacon = 0
+	actor.closebeaconmenu = 0
+	actor:sound_play(gm.constants.wMercenary_EviscerateActivate, 1, 1)
+	
+	if beacon1 == 0 then
+		actor:add_skill_override(Skill.SLOT.primary, priHealing, 20)
+	elseif beacon1 == 1 then
+		actor:add_skill_override(Skill.SLOT.primary, priShocking, 20)
+	elseif beacon1 == 2 then
+		actor:add_skill_override(Skill.SLOT.primary, priResupply, 20)
+	elseif beacon1 == 3 then
+		actor:add_skill_override(Skill.SLOT.primary, priHacking, 20)
+	end
+	
+	if beacon2 == 0 then
+		actor:add_skill_override(Skill.SLOT.secondary, priHealing, 20)
+	elseif beacon2 == 1 then
+		actor:add_skill_override(Skill.SLOT.secondary, priShocking, 20)
+	elseif beacon2 == 2 then
+		actor:add_skill_override(Skill.SLOT.secondary, priResupply, 20)
+	elseif beacon2 == 3 then
+		actor:add_skill_override(Skill.SLOT.secondary, priHacking, 20)
+	end
+	
+	local preview = efPreview3:create(actor.x, actor.y)
+	preview.parent = actor
+end)
 
---Beacon: Healing
-local healing = Skill.new(NAMESPACE, "captainBeaconHealing")
-healing:set_skill_icon(sprite_skills, 9)
-healing:clear_callbacks()
+stbeacon:onStep(function(actor, data)
+	actor:freeze_active_skill(Skill.SLOT.special)
+	actor:skill_util_step_strafe_sprites()
+	actor:skill_util_strafe_turn_turn_if_direction_changed()
+	
+	actor:skill_util_strafe_turn_update(0.2 * actor.attack_speed, 0.9)
+	actor:skill_util_strafe_update(0.2 * actor.attack_speed, 0.9)
+	
+	if data.call_sound == -1 then
+		data.call_sound = actor:sound_play(gm.constants.wTeleporter_AmbienceLoopable, 1, 1)
+		gm.audio_sound_loop(data.call_sound, true)
+	end
+	
+	if actor.callingbeacon == 1 then
+		if actor.sprite_index2 == sprite_shoot4 and actor.image_index2 >= 8 then
+			actor.sprite_index2 = sprite_call
+			actor.callingbeacon = 0
+			actor.image_index2 = 0
+		end
+	end
+	
+	if actor.closebeaconmenu == 1 and actor.callingbeacon == 1 then
+		actor:remove_skill_override(Skill.SLOT.primary, priHealing, 20)
+		actor:remove_skill_override(Skill.SLOT.secondary, priHealing, 20)
+		actor:remove_skill_override(Skill.SLOT.primary, priShocking, 20)
+		actor:remove_skill_override(Skill.SLOT.secondary, priShocking, 20)
+		actor:remove_skill_override(Skill.SLOT.primary, priResupply, 20)
+		actor:remove_skill_override(Skill.SLOT.secondary, priResupply, 20)
+		actor:remove_skill_override(Skill.SLOT.primary, priHacking, 20)
+		actor:remove_skill_override(Skill.SLOT.secondary, priHacking, 20)
+	elseif actor.closebeaconmenu == 1 and actor.callingbeacon == 0 then
+		actor:skill_util_reset_activity_state()
+	end
+end)
 
--- create a skill slot that will show up in the misc slot selections
-local unlockableHealing = gm["@@NewGMLObject@@"](gm.constants.SurvivorSkillLoadoutUnlockable)
-unlockableHealing.skill_id = healing.value
+stbeacon:onExit(function(actor, data)
+	actor:remove_skill_override(Skill.SLOT.primary, priHealing, 20)
+	actor:remove_skill_override(Skill.SLOT.secondary, priHealing, 20)
+	actor:remove_skill_override(Skill.SLOT.primary, priShocking, 20)
+	actor:remove_skill_override(Skill.SLOT.secondary, priShocking, 20)
+	actor:remove_skill_override(Skill.SLOT.primary, priResupply, 20)
+	actor:remove_skill_override(Skill.SLOT.secondary, priResupply, 20)
+	actor:remove_skill_override(Skill.SLOT.primary, priHacking, 20)
+	actor:remove_skill_override(Skill.SLOT.secondary, priHacking, 20)
+	actor.closebeaconmenu = 0
+	if gm.audio_is_playing(data.call_sound) then
+		gm.audio_stop_sound(data.call_sound)
+	end
+end)
 
---Beacon: Shocking
-local shocking = Skill.new(NAMESPACE, "captainBeaconShocking")
-shocking:set_skill_icon(sprite_skills, 10)
-shocking:clear_callbacks()
-
-local unlockableShocking = gm["@@NewGMLObject@@"](gm.constants.SurvivorSkillLoadoutUnlockable)
-unlockableShocking.skill_id = shocking.value
-
---Beacon: Resupply
-local resupply = Skill.new(NAMESPACE, "captainBeaconResupply")
-resupply:set_skill_icon(sprite_skills, 11)
-resupply:clear_callbacks()
-
-local unlockableResupply = gm["@@NewGMLObject@@"](gm.constants.SurvivorSkillLoadoutUnlockable)
-unlockableResupply.skill_id = resupply.value
-
---Beacon: Hacking
-local hacking = Skill.new(NAMESPACE, "captainBeaconHacking")
-hacking:set_skill_icon(sprite_skills, 12)
-hacking:clear_callbacks()
-
-local unlockableHacking = gm["@@NewGMLObject@@"](gm.constants.SurvivorSkillLoadoutUnlockable)
-unlockableHacking.skill_id = hacking.value
-
-
--- create the first misc slot selection
-local misc1 = gm["@@NewGMLObject@@"](gm.constants.SurvivorBaseLoadoutFamily)
-misc1.family_name = "captainBeaconMisc1" -- must be unique, used for multiplayer syncing
-gm.array_resize(misc1.elements, 0) -- clear the misc slot selection
- -- add the healing beacon skill slot to out misc slot selection, then the shocking, etc
-gm.array_push(misc1.elements, unlockableHealing)
-gm.array_push(misc1.elements, unlockableShocking)
-gm.array_push(misc1.elements, unlockableResupply)
-gm.array_push(misc1.elements, unlockableHacking)
-cap.all_skill_families:resize(4) -- limit the size so that it doesnt start duplicating itself
-cap.all_skill_families:push(misc1) -- 
-
-local misc2 = gm["@@NewGMLObject@@"](gm.constants.SurvivorBaseLoadoutFamily)
-misc2.family_name = "captainBeaconMisc2"
-gm.array_resize(misc2.elements, 0)
-gm.array_push(misc2.elements, unlockableHealing)
-gm.array_push(misc2.elements, unlockableShocking)
-gm.array_push(misc2.elements, unlockableResupply)
-gm.array_push(misc2.elements, unlockableHacking)
-cap.all_skill_families:resize(5)
-cap.all_skill_families:push(misc2)
+stbeacon:onGetInterruptPriority(function(actor, data)
+	return State.ACTOR_STATE_INTERRUPT_PRIORITY.skill_interrupt_period
+end)
