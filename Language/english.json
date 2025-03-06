@@ -60,6 +60,10 @@
 			"name": "Beacon: Hacking",
 			"description": "<b>Hack</c> all nearby purchasables to a cost of <b>$0</c> over time."
 		},
+	"captainUnavailable": {
+			"name": "Unavailable",
+			"description": "You have already called in a Supply Drop this stage."
+		},
 	},
 "item" : {
 	"defensiveMicrobots" : {

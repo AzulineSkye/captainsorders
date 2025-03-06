@@ -22,6 +22,11 @@ local sprite_shoot2 = Resources.sprite_load(NAMESPACE, "captainShoot2", path.com
 local sprite_shoot3 = Resources.sprite_load(NAMESPACE, "captainShoot3", path.combine(PATH, "Sprites/shoot3.png"), 3, 14, 20)
 local sprite_call = Resources.sprite_load(NAMESPACE, "captainCall", path.combine(PATH, "Sprites/call.png"), 1, 12, 20)
 local sprite_shoot4	= Resources.sprite_load(NAMESPACE, "captainShoot4", path.combine(PATH, "Sprites/shoot4.png"), 8, 14, 20)
+local sprite_healing = Resources.sprite_load(NAMESPACE, "captainBeaconHealing", path.combine(PATH, "Sprites/beaconHealing.png"), 11, 20, 50)
+local sprite_shocking = Resources.sprite_load(NAMESPACE, "captainBeaconShocking", path.combine(PATH, "Sprites/beaconShocking.png"), 11, 20, 50)
+local sprite_resupply = Resources.sprite_load(NAMESPACE, "captainBeaconResupply", path.combine(PATH, "Sprites/beaconResupply.png"), 11, 20, 50)
+local sprite_hacking = Resources.sprite_load(NAMESPACE, "captainBeaconHacking", path.combine(PATH, "Sprites/beaconHacking.png"), 11, 20, 50)
+local sprite_impact = Resources.sprite_load(NAMESPACE, "captainBeaconImpact", path.combine(PATH, "Sprites/beaconimpact.png"), 5, 117, 200)
 
 local cap = Survivor.new(NAMESPACE, "captain")
 local cap_id = cap.value
@@ -81,10 +86,21 @@ cap:onInit(function(actor)
 	
 	actor.charging_shotgun = 0
 	actor.callingprobe = 0
-	actor.closebeaconmenu = 0
+	actor.probeallowcancel = 0
+	actor.beaconallowcancel = 0
+	actor.closebeaconmenu = 1
+	actor.callcooldown = 0
+	actor.beacon1charges = 0
+	actor.beacon2charges = 0
 	if not actor.microbotsrecieved then
 		actor:item_give(Item.find(NAMESPACE, "defensiveMicrobots"))
 		actor.microbotsrecieved = 1
+	end
+end)
+
+cap:onStep(function(actor)
+	if actor.callcooldown > 0 then
+		actor.callcooldown = actor.callcooldown - 1
 	end
 end)
 
@@ -92,7 +108,7 @@ end)
 
 --Particles
 local parTazer = Particle.new(NAMESPACE, "particleCaptainTazer")
-parTazer:set_colour3(Color.from_rgb(250, 255, 255), Color.from_rgb(142, 223, 229), Color.from_rgb(57, 118, 210))
+parTazer:set_color3(Color.from_rgb(250, 255, 255), Color.from_rgb(142, 223, 229), Color.from_rgb(57, 118, 210))
 parTazer:set_life(30, 30)
 parTazer:set_shape(Particle.SHAPE.line)
 parTazer:set_scale(1, 0.5)
@@ -100,32 +116,38 @@ parTazer:set_size(0.33, 0.1, 0, 0)
 parTazer:set_alpha2(1, 0)
 
 local parCall = Particle.new(NAMESPACE, "particleCaptainCall")
-parCall:set_colour2(Color.from_rgb(221, 184, 49), Color.from_rgb(221, 49, 70))
+parCall:set_color2(Color.from_rgb(221, 184, 49), Color.from_rgb(221, 49, 70))
 parCall:set_life(8, 8)
 parCall:set_shape(Particle.SHAPE.circle)
 parCall:set_scale(0.2, 0.2)
 parCall:set_size(0.2, 1, 0.1, 0)
 
+local parCallB = Particle.new(NAMESPACE, "particleCaptainCallBeacon")
+parCallB:set_color2(Color.from_rgb(70, 184, 221), Color.from_rgb(70, 49, 221))
+parCallB:set_life(8, 8)
+parCallB:set_shape(Particle.SHAPE.circle)
+parCallB:set_scale(0.2, 0.2)
+parCallB:set_size(0.2, 1, 0.1, 0)
+
 local parProbeTrailCircle = Particle.new(NAMESPACE, "particleCaptainProbeTrailCircle")
-parProbeTrailCircle:set_colour2(Color.from_rgb(255, 236, 215), Color.from_rgb(255, 174, 92))
+parProbeTrailCircle:set_color2(Color.from_rgb(255, 236, 215), Color.from_rgb(255, 174, 92))
 parProbeTrailCircle:set_life(2, 2)
-parProbeTrailCircle:set_speed(45, 45, 0, 0)
+parProbeTrailCircle:set_speed(30, 30, 0, 0)
 parProbeTrailCircle:set_shape(Particle.SHAPE.circle)
 parProbeTrailCircle:set_scale(0.8, 0.8)
 parProbeTrailCircle:set_size(1, 1, 0, 0)
 
 local parProbeTrailLine = Particle.new(NAMESPACE, "particleCaptainProbeTrailLine")
-parProbeTrailLine:set_colour2(Color.from_rgb(255, 236, 215), Color.from_rgb(255, 174, 92))
+parProbeTrailLine:set_color2(Color.from_rgb(255, 236, 215), Color.from_rgb(255, 174, 92))
 parProbeTrailLine:set_life(15, 15)
 parProbeTrailLine:set_shape(Particle.SHAPE.line)
 parProbeTrailLine:set_scale(0.75, 0.5)
 parProbeTrailLine:set_size(1, 1, 0, 0)
 parProbeTrailLine:set_alpha2(1, 0)
 parProbeTrailLine:set_orientation(90, 90, 0, 0, true)
-parProbeTrailCircle:set_speed(30, 30, 0, 0)
 
 local parProbeTrail = Particle.new(NAMESPACE, "particleCaptainProbeTrail")
-parProbeTrail:set_colour2(Color.from_rgb(255, 232, 68), Color.from_rgb(241, 185, 96))
+parProbeTrail:set_color1(Color.from_rgb(241, 185, 96))
 parProbeTrail:set_orientation(50, 50, 0, 0, true)
 parProbeTrail:set_scale(0.9, 0.9)
 parProbeTrail:set_speed(44.85, 44.85, 0, 0)
@@ -136,6 +158,22 @@ local parProbeTrail2 = Particle.new(NAMESPACE, "particleCaptainProbeTrail2")
 parProbeTrail2:set_speed(45, 45, 0, 0)
 parProbeTrail2:set_step(1, parProbeTrailCircle)
 
+local parBeaconTrailLine = Particle.new(NAMESPACE, "particleCaptainBeaconTrailLine")
+parBeaconTrailLine:set_color2(Color.from_rgb(215, 242, 255), Color.from_rgb(92, 206, 255))
+parBeaconTrailLine:set_life(15, 15)
+parBeaconTrailLine:set_shape(Particle.SHAPE.line)
+parBeaconTrailLine:set_scale(0.75, 3)
+parBeaconTrailLine:set_size(1, 1, 0, 0)
+parBeaconTrailLine:set_alpha2(1, 0)
+parBeaconTrailLine:set_orientation(90, 90, 0, 0, true)
+
+local parBeaconTrail = Particle.new(NAMESPACE, "particleCaptainBeaconTrail")
+parBeaconTrail:set_color1(Color.from_rgb(70, 184, 221))
+parBeaconTrail:set_orientation(50, 50, 0, 0, true)
+parBeaconTrail:set_scale(1.5, 1.5)
+parBeaconTrail:set_speed(44.85, 44.85, 0, 0)
+parBeaconTrail:set_sprite(gm.constants.sSparks8, false, false, false)
+parBeaconTrail:set_step(1, parBeaconTrailLine)
 
 
 
@@ -163,6 +201,27 @@ objProbe:clear_callbacks()
 
 local efPreview3 = Object.new(NAMESPACE, "efCaptainBeaconPreview")
 efPreview3:clear_callbacks()
+
+local objHealing = Object.new(NAMESPACE, "objCaptainBeaconHealing")
+objHealing.obj_sprite = sprite_healing
+objHealing.obj_depth = 12
+objHealing:clear_callbacks()
+
+local objShocking = Object.new(NAMESPACE, "objCaptainBeaconShocking")
+objShocking.obj_sprite = sprite_shocking
+objShocking.obj_depth = 12
+objShocking:clear_callbacks()
+
+local objResupply = Object.new(NAMESPACE, "objCaptainBeaconResupply")
+objResupply.obj_sprite = sprite_resupply
+objResupply.obj_depth = 12
+objResupply:clear_callbacks()
+
+local objHacking = Object.new(NAMESPACE, "objCaptainBeaconHacking")
+objHacking.obj_sprite = sprite_hacking
+objHacking.obj_depth = 12
+objHacking:clear_callbacks()
+
 
 
 --Beacon: Healing
@@ -197,6 +256,12 @@ hacking:clear_callbacks()
 
 local unlockableHacking = gm["@@NewGMLObject@@"](gm.constants.SurvivorSkillLoadoutUnlockable)
 unlockableHacking.skill_id = hacking.value
+
+--Unavailable
+local unavailable = Skill.newEmpty(NAMESPACE, "captainUnavailable")
+unavailable:set_skill_icon(sprite_skills, 8)
+unavailable:clear_callbacks()
+
 
 
 --create the first misc slot selection
@@ -341,12 +406,24 @@ stvulcan:onStep(function(actor, data)
 			data.fired = 1
 			data.spread = math.max(0, math.floor(data.chargetimer / 4))
 			data.range = 1000 - 666 * (data.chargetimer / 72)
+			actor.z_count = actor.z_count + 1
 
-			if actor:is_authority() then
-				if not GM.skill_util_update_heaven_cracker(actor, damage, actor.image_xscale) then
-					local buff_shadow_clone = Buff.find("ror", "shadowClone")
-					for i=0, actor:buff_stack_count(buff_shadow_clone) do
-						for s=0, 8 do
+			if gm._mod_net_isHost() then
+				local heaven_cracker_count = actor:item_stack_count(Item.find("ror", "heavenCracker"))
+				local cracker_shot = false
+
+				if heaven_cracker_count > 0 and actor.z_count >= 5 - heaven_cracker_count then
+					cracker_shot = true
+					actor.z_count = 0
+				end
+				
+				local buff_shadow_clone = Buff.find("ror", "shadowClone")
+				for i=0, actor:buff_stack_count(buff_shadow_clone) do
+					for s=0, 8 do
+						if cracker_shot then
+							local attack = actor:fire_bullet(actor.x, actor.y, data.range, actor:skill_util_facing_direction() + math.random(-data.spread, data.spread), actor:skill_get_damage(vulcan), 1, gm.constants.sSparks1, Attack_Info.TRACER.drill)
+							attack.attack_info.climb = (s + 1) * 8 + i * 8
+						else
 							local attack = actor:fire_bullet(actor.x, actor.y, data.range, actor:skill_util_facing_direction() + math.random(-data.spread, data.spread), actor:skill_get_damage(vulcan), nil, gm.constants.sSparks15r, Attack_Info.TRACER.bandit3_r)
 							attack.attack_info.climb = (s + 1) * 8 + i * 8
 						end
@@ -496,7 +573,7 @@ priProbe:onActivate(function(actor)
 	actor:collision_line_advanced(actor.x, actor.y + 10, actor.x + 150 * actor.image_xscale, actor.y + 10, gm.constants.pBlock, true, true)
 	local collision_x1 = gm.variable_global_get("collision_x") - 2 * actor.image_xscale
 	local collision_y1 = gm.variable_global_get("collision_y")
-	actor:collision_line_advanced(collision_x1, collision_y1, collision_x1 - 10 * actor.image_xscale, actor.y + 400, gm.constants.pBlock, true, true)
+	actor:collision_line_advanced(collision_x1, collision_y1, collision_x1 - 10 * actor.image_xscale, actor.y + 2000, gm.constants.pBlock, true, true)
 	local collision_x2 = gm.variable_global_get("collision_x")
 	local collision_y2 = gm.variable_global_get("collision_y")
 	local oProbe = objProbe:create(collision_x2, collision_y2)
@@ -509,13 +586,18 @@ probe.cooldown = 11 * 60
 probe.damage = 5.0
 probe.is_utility = true
 probe.required_interrupt_priority = State.ACTOR_STATE_INTERRUPT_PRIORITY.any
+probe.require_key_press = true
 probe:clear_callbacks()
 
 local stprobe = State.new(NAMESPACE, "orbitalProbe")
 stprobe:clear_callbacks()
 
 probe:onActivate(function(actor)
-	actor:enter_state(stprobe)
+	if actor.callcooldown <= 0 then
+		actor:enter_state(stprobe)
+	elseif actor:get_active_skill(Skill.SLOT.utility).skill_id == probe.value then
+		actor:refresh_skill(Skill.SLOT.utility)
+	end
 end)
 
 objProbe:onCreate(function(self)
@@ -523,7 +605,7 @@ objProbe:onCreate(function(self)
 	data.lifetime_max = 120
 	data.lifetime = 120
 	self.parent = -4
-	local height = 5400
+	local height = 5450
 	local offset = math.random(-200, 200)
 	local distance = GM.point_distance(self.x + offset, self.y - height, self.x, self.y)
 	local angle = math.deg(GM.arctan2((self.y - height) - self.y, self.x - (self.x + offset)))
@@ -553,7 +635,7 @@ objProbe:onStep(function(self)
 		if gm._mod_net_isHost() then
 			local buff_shadow_clone = Buff.find("ror", "shadowClone")
 			for i=0, self.parent:buff_stack_count(buff_shadow_clone) do
-				local attack = self.parent:fire_explosion(self.x, self.y - 10, 192, 192, self.parent:skill_get_damage(probe), gm.constants.sEfBombExplode, gm.constants.sSparks1)
+				local attack = self.parent:fire_explosion(self.x, self.y - 10, 192, 192, self.parent:skill_get_damage(probe), gm.constants.sEfSuperMissileExplosion, gm.constants.sSparks12)
 				attack.attack_info:set_stun(1.5, Attack_Info.KNOCKBACK_DIR.right, Attack_Info.KNOCKBACK_KIND.none)
 				attack.attack_info.climb = i * 8
 				self.parent:sound_play(gm.constants.wTurtleExplosion, 1, 0.6)
@@ -568,8 +650,6 @@ end)
 objProbe:onDraw(function(self)
 	local data = self:get_data()
 	
-	
-	
 	local radius = (1 - (data.lifetime / data.lifetime_max)) * 96
 	gm.draw_set_colour(Color.from_hsv(353, 78, 87))
 	gm.draw_circle(self.x, self.y, radius, true)
@@ -583,7 +663,7 @@ efPreview2:onDraw(function(self)
 			actor:collision_line_advanced(actor.x, actor.y + 10, actor.x + 150 * actor.image_xscale, actor.y + 10, gm.constants.pBlock, true, true)
 			local collision_x1 = gm.variable_global_get("collision_x") - 2 * actor.image_xscale
 			local collision_y1 = gm.variable_global_get("collision_y")
-			actor:collision_line_advanced(collision_x1, collision_y1, collision_x1 - 10 * actor.image_xscale, actor.y + 400, gm.constants.pBlock, true, true)
+			actor:collision_line_advanced(collision_x1, collision_y1, collision_x1 - 10 * actor.image_xscale, actor.y + 2000, gm.constants.pBlock, true, true)
 			local collision_x2 = gm.variable_global_get("collision_x")
 			local collision_y2 = gm.variable_global_get("collision_y")
 			gm.draw_set_colour(Color.from_hsv(0, 0, 100))
@@ -603,6 +683,7 @@ stprobe:onEnter(function(actor, data)
 	data.timer = 0
 	data.call_sound = -1
 	actor.callingprobe = 0
+	actor.probeallowcancel = 0
 	actor:sound_play(gm.constants.wMercenary_EviscerateActivate, 1, 1)
 	actor:add_skill_override(Skill.SLOT.primary, priProbe, 10)
 	local preview = efPreview2:create(actor.x, actor.y)
@@ -614,8 +695,12 @@ stprobe:onStep(function(actor, data)
 	actor:skill_util_step_strafe_sprites()
 	actor:skill_util_strafe_turn_turn_if_direction_changed()
 	
-	actor:skill_util_strafe_turn_update(0.2 * actor.attack_speed, 0.9)
-	actor:skill_util_strafe_update(0.2 * actor.attack_speed, 0.9)
+	actor:skill_util_strafe_turn_update(0.2, 0.9)
+	actor:skill_util_strafe_update(0.2, 0.9)
+	
+	if actor.c_skill == false and actor.probeallowcancel == 0 then
+		actor.probeallowcancel = 1
+	end
 	
 	data.timer = data.timer + 1
 	if data.timer > 4 and actor.callingprobe == 0 then
@@ -645,12 +730,14 @@ stprobe:onStep(function(actor, data)
 		end
 	end
 	
-	if actor:get_active_skill(Skill.SLOT.primary).skill_id ~= priProbe.value and actor.callingprobe == 0 then
+	if (actor:get_active_skill(Skill.SLOT.primary).skill_id ~= priProbe.value and actor.callingprobe == 0) or (actor.probeallowcancel == 1 and actor.c_skill == true and actor.callingprobe == 0) then
 		actor:skill_util_reset_activity_state()
 	end
 end)
 
 stprobe:onExit(function(actor, data)
+	actor.probeallowcancel = 0
+	actor.callcooldown = 10
 	actor:remove_skill_override(Skill.SLOT.primary, priProbe, 10)
 	if gm.audio_is_playing(data.call_sound) then
 		gm.audio_stop_sound(data.call_sound)
@@ -667,119 +754,102 @@ end)
 local priHealing = Skill.new(NAMESPACE, "captainBeaconHealing_1")
 priHealing:set_skill_icon(sprite_skills, 9)
 priHealing.require_key_press = true
-priHealing.auto_restock = false
 priHealing:clear_callbacks()
-
-priHealing:onActivate(function(actor)
-	actor.callingbeacon = 1
-	actor.closebeaconmenu = 1
-	actor.image_index2 = 0
-	actor.sprite_index2 = sprite_shoot4
-	actor:sound_play(gm.constants.wHANDShoot2_1, 1, 0.9 + math.random() * 0.1)
-	actor:collision_line_advanced(actor.x, actor.y + 10, actor.x + 150 * actor.image_xscale, actor.y + 10, gm.constants.pBlock, true, true)
-	local collision_x1 = gm.variable_global_get("collision_x") - 2 * actor.image_xscale
-	local collision_y1 = gm.variable_global_get("collision_y")
-	actor:collision_line_advanced(collision_x1, collision_y1, collision_x1 - 10 * actor.image_xscale, actor.y + 400, gm.constants.pBlock, true, true)
-	local collision_x2 = gm.variable_global_get("collision_x")
-	local collision_y2 = gm.variable_global_get("collision_y")
-	--local oProbe = objProbe:create(collision_x2, collision_y2)
-	--oProbe.parent = actor
-end)
 
 local priShocking = Skill.new(NAMESPACE, "captainBeaconShocking_1")
 priShocking:set_skill_icon(sprite_skills, 10)
 priShocking.require_key_press = true
-priShocking.auto_restock = false
 priShocking:clear_callbacks()
-
-priShocking:onActivate(function(actor)
-	actor.callingbeacon = 1
-	actor.closebeaconmenu = 1
-	actor.image_index2 = 0
-	actor.sprite_index2 = sprite_shoot4
-	actor:sound_play(gm.constants.wHANDShoot2_1, 1, 0.9 + math.random() * 0.1)
-	actor:collision_line_advanced(actor.x, actor.y + 10, actor.x + 150 * actor.image_xscale, actor.y + 10, gm.constants.pBlock, true, true)
-	local collision_x1 = gm.variable_global_get("collision_x") - 2 * actor.image_xscale
-	local collision_y1 = gm.variable_global_get("collision_y")
-	actor:collision_line_advanced(collision_x1, collision_y1, collision_x1 - 10 * actor.image_xscale, actor.y + 400, gm.constants.pBlock, true, true)
-	local collision_x2 = gm.variable_global_get("collision_x")
-	local collision_y2 = gm.variable_global_get("collision_y")
-	--local oProbe = objProbe:create(collision_x2, collision_y2)
-	--oProbe.parent = actor
-end)
 
 local priResupply = Skill.new(NAMESPACE, "captainBeaconResupply_1")
 priResupply:set_skill_icon(sprite_skills, 11)
 priResupply.require_key_press = true
-priResupply.auto_restock = false
 priResupply:clear_callbacks()
-
-priResupply:onActivate(function(actor)
-	actor.callingbeacon = 1
-	actor.closebeaconmenu = 1
-	actor.image_index2 = 0
-	actor.sprite_index2 = sprite_shoot4
-	actor:sound_play(gm.constants.wHANDShoot2_1, 1, 0.9 + math.random() * 0.1)
-	actor:collision_line_advanced(actor.x, actor.y + 10, actor.x + 150 * actor.image_xscale, actor.y + 10, gm.constants.pBlock, true, true)
-	local collision_x1 = gm.variable_global_get("collision_x") - 2 * actor.image_xscale
-	local collision_y1 = gm.variable_global_get("collision_y")
-	actor:collision_line_advanced(collision_x1, collision_y1, collision_x1 - 10 * actor.image_xscale, actor.y + 400, gm.constants.pBlock, true, true)
-	local collision_x2 = gm.variable_global_get("collision_x")
-	local collision_y2 = gm.variable_global_get("collision_y")
-	--local oProbe = objProbe:create(collision_x2, collision_y2)
-	--oProbe.parent = actor
-end)
 
 local priHacking = Skill.new(NAMESPACE, "captainBeaconHacking_1")
 priHacking:set_skill_icon(sprite_skills, 12)
 priHacking.require_key_press = true
-priHacking.auto_restock = false
 priHacking:clear_callbacks()
 
-priHacking:onActivate(function(actor)
-	actor.callingbeacon = 1
+local function captain_remove_beacon_overrides(actor)
+	actor:remove_skill_override(Skill.SLOT.primary, priHealing, 20)
+	actor:remove_skill_override(Skill.SLOT.secondary, priHealing, 20)
+	actor:remove_skill_override(Skill.SLOT.primary, priShocking, 20)
+	actor:remove_skill_override(Skill.SLOT.secondary, priShocking, 20)
+	actor:remove_skill_override(Skill.SLOT.primary, priResupply, 20)
+	actor:remove_skill_override(Skill.SLOT.secondary, priResupply, 20)
+	actor:remove_skill_override(Skill.SLOT.primary, priHacking, 20)
+	actor:remove_skill_override(Skill.SLOT.secondary, priHacking, 20)
+	actor:remove_skill_override(Skill.SLOT.primary, unavailable, 30)
+	actor:remove_skill_override(Skill.SLOT.secondary, unavailable, 30)
+end
+
+local function captain_create_beacon(actor, object)
+	captain_remove_beacon_overrides(actor)
 	actor.closebeaconmenu = 1
 	actor.image_index2 = 0
 	actor.sprite_index2 = sprite_shoot4
 	actor:sound_play(gm.constants.wHANDShoot2_1, 1, 0.9 + math.random() * 0.1)
-	actor:collision_line_advanced(actor.x, actor.y + 10, actor.x + 150 * actor.image_xscale, actor.y + 10, gm.constants.pBlock, true, true)
+	actor:collision_line_advanced(actor.x, actor.y + 10, actor.x + 175 * actor.image_xscale, actor.y + 10, gm.constants.pBlock, true, true)
 	local collision_x1 = gm.variable_global_get("collision_x") - 2 * actor.image_xscale
 	local collision_y1 = gm.variable_global_get("collision_y")
-	actor:collision_line_advanced(collision_x1, collision_y1, collision_x1 - 10 * actor.image_xscale, actor.y + 400, gm.constants.pBlock, true, true)
+	actor:collision_line_advanced(collision_x1, collision_y1, collision_x1 - 10 * actor.image_xscale, actor.y + 2000, gm.constants.pBlock, true, true)
 	local collision_x2 = gm.variable_global_get("collision_x")
 	local collision_y2 = gm.variable_global_get("collision_y")
-	--local oProbe = objProbe:create(collision_x2, collision_y2)
-	--oProbe.parent = actor
+	local oBeacon = object:create(collision_x2, collision_y2 - 12)
+	oBeacon.parent = actor
+end
+
+priHealing:onActivate(function(actor)
+	captain_create_beacon(actor, objHealing)
+end)
+
+priShocking:onActivate(function(actor)
+	captain_create_beacon(actor, objShocking)
+end)
+
+priResupply:onActivate(function(actor)
+	captain_create_beacon(actor, objResupply)
+end)
+
+priHacking:onActivate(function(actor)
+	captain_create_beacon(actor, objHacking)
 end)
 
 local beacon = cap:get_special()
 beacon:set_skill_icon(sprite_skills, 6)
-beacon.cooldown = 0
-beacon.damage = 10
+beacon.cooldown = 10
 beacon.is_primary = true
-beacon.require_key_press = true
+beacon.damage = 10
 beacon.required_interrupt_priority = State.ACTOR_STATE_INTERRUPT_PRIORITY.any
+beacon.require_key_press = true
 beacon:clear_callbacks()
 
 local stbeacon = State.new(NAMESPACE, "orbitalSupplyBeacon")
 stbeacon:clear_callbacks()
 
 beacon:onActivate(function(actor)
-	actor:enter_state(stbeacon)
+	if actor.callcooldown <= 0 then
+		actor:refresh_skill(Skill.SLOT.special)
+		actor:enter_state(stbeacon)
+	elseif actor:get_active_skill(Skill.SLOT.special).skill_id == beacon.value then
+		actor:refresh_skill(Skill.SLOT.special)
+	end
 end)
 
 efPreview3:onDraw(function(self)
 	local actor = self.parent
-	if actor.closebeaconmenu == 0 and actor.callingbeacon == 0 then
-		actor:collision_line_advanced(actor.x, actor.y + 10, actor.x + 150 * actor.image_xscale, actor.y + 10, gm.constants.pBlock, true, true)
+	if actor.closebeaconmenu == 0 then
+		actor:collision_line_advanced(actor.x, actor.y + 10, actor.x + 175 * actor.image_xscale, actor.y + 10, gm.constants.pBlock, true, true)
 		local collision_x1 = gm.variable_global_get("collision_x") - 2 * actor.image_xscale
 		local collision_y1 = gm.variable_global_get("collision_y")
-		actor:collision_line_advanced(collision_x1, collision_y1, collision_x1 - 10 * actor.image_xscale, actor.y + 400, gm.constants.pBlock, true, true)
+		actor:collision_line_advanced(collision_x1, collision_y1, collision_x1 - 10 * actor.image_xscale, actor.y + 2000, gm.constants.pBlock, true, true)
 		local collision_x2 = gm.variable_global_get("collision_x")
 		local collision_y2 = gm.variable_global_get("collision_y")
-		gm.draw_set_colour(Color.from_hsv(0, 0, 100))
-		gm.draw_line_width(collision_x2, collision_y2, collision_x2, collision_y2 - 600, 1)
-		gm.draw_circle(collision_x2, collision_y2, 200, true)
+		gm.draw_set_colour(Color.from_rgb(70, 184, 221))
+		gm.draw_circle(collision_x2, collision_y2, 132, true)
+		gm.draw_circle(collision_x2, collision_y2, 138, true)
+		gm.draw_sprite(sprite_healing, 6, collision_x2, collision_y2 - 12)
 	else
 		self:destroy()
 	end
@@ -794,30 +864,38 @@ stbeacon:onEnter(function(actor, data)
 	actor:skill_util_strafe_turn_init()
 	actor.sprite_index2 = sprite_call
 	actor.image_index2 = 0
-	data.timer = 0
 	data.call_sound = -1
-	actor.callingbeacon = 0
+	data.beacon_removed = 0
 	actor.closebeaconmenu = 0
+	actor.beaconallowcancel = 0
 	actor:sound_play(gm.constants.wMercenary_EviscerateActivate, 1, 1)
 	
-	if beacon1 == 0 then
-		actor:add_skill_override(Skill.SLOT.primary, priHealing, 20)
-	elseif beacon1 == 1 then
-		actor:add_skill_override(Skill.SLOT.primary, priShocking, 20)
-	elseif beacon1 == 2 then
-		actor:add_skill_override(Skill.SLOT.primary, priResupply, 20)
-	elseif beacon1 == 3 then
-		actor:add_skill_override(Skill.SLOT.primary, priHacking, 20)
+	if actor.beacon1charges > 0 then
+		if beacon1 == 0 then
+			actor:add_skill_override(Skill.SLOT.primary, priHealing, 20)
+		elseif beacon1 == 1 then
+			actor:add_skill_override(Skill.SLOT.primary, priShocking, 20)
+		elseif beacon1 == 2 then
+			actor:add_skill_override(Skill.SLOT.primary, priResupply, 20)
+		elseif beacon1 == 3 then
+			actor:add_skill_override(Skill.SLOT.primary, priHacking, 20)
+		end
+	else
+		actor:add_skill_override(Skill.SLOT.primary, unavailable, 30)
 	end
 	
-	if beacon2 == 0 then
-		actor:add_skill_override(Skill.SLOT.secondary, priHealing, 20)
-	elseif beacon2 == 1 then
-		actor:add_skill_override(Skill.SLOT.secondary, priShocking, 20)
-	elseif beacon2 == 2 then
-		actor:add_skill_override(Skill.SLOT.secondary, priResupply, 20)
-	elseif beacon2 == 3 then
-		actor:add_skill_override(Skill.SLOT.secondary, priHacking, 20)
+	if actor.beacon2charges > 0 then
+		if beacon2 == 0 then
+			actor:add_skill_override(Skill.SLOT.secondary, priHealing, 20)
+		elseif beacon2 == 1 then
+			actor:add_skill_override(Skill.SLOT.secondary, priShocking, 20)
+		elseif beacon2 == 2 then
+			actor:add_skill_override(Skill.SLOT.secondary, priResupply, 20)
+		elseif beacon2 == 3 then
+			actor:add_skill_override(Skill.SLOT.secondary, priHacking, 20)
+		end
+	else
+		actor:add_skill_override(Skill.SLOT.secondary, unavailable, 30)
 	end
 	
 	local preview = efPreview3:create(actor.x, actor.y)
@@ -825,50 +903,55 @@ stbeacon:onEnter(function(actor, data)
 end)
 
 stbeacon:onStep(function(actor, data)
-	actor:freeze_active_skill(Skill.SLOT.special)
 	actor:skill_util_step_strafe_sprites()
 	actor:skill_util_strafe_turn_turn_if_direction_changed()
 	
-	actor:skill_util_strafe_turn_update(0.2 * actor.attack_speed, 0.9)
-	actor:skill_util_strafe_update(0.2 * actor.attack_speed, 0.9)
+	if actor.v_skill == false and actor.beaconallowcancel == 0 then
+		actor.beaconallowcancel = 1
+		actor.sprite_index2 = sprite_call
+		actor.image_index2 = 0
+	end
 	
 	if data.call_sound == -1 then
 		data.call_sound = actor:sound_play(gm.constants.wTeleporter_AmbienceLoopable, 1, 1)
 		gm.audio_sound_loop(data.call_sound, true)
 	end
 	
-	if actor.callingbeacon == 1 then
-		if actor.sprite_index2 == sprite_shoot4 and actor.image_index2 >= 8 then
-			actor.sprite_index2 = sprite_call
-			actor.callingbeacon = 0
-			actor.image_index2 = 0
+	if actor.closebeaconmenu == 1 then
+		if actor.beacon1charges + actor.beacon2charges <= 0 and actor:get_active_skill(Skill.SLOT.special).skill_id ~= unavailable.value then
+			actor:add_skill_override(Skill.SLOT.special, unavailable, 30)
 		end
+		actor:skill_util_strafe_turn_update(0.25, 1)
+		actor:skill_util_strafe_update(0.25, 1)
+		if data.beacon_removed == 0 then
+			if actor.z_skill == true then
+				actor.beacon1charges = actor.beacon1charges - 1
+			elseif actor.x_skill == true then
+				actor.beacon2charges = actor.beacon2charges - 1
+			end
+			data.beacon_removed = 1
+		end
+		if actor.sprite_index2 == sprite_shoot4 and actor.image_index2 >= 8 then
+			captain_remove_beacon_overrides(actor)
+			actor:skill_util_reset_activity_state()
+		end
+	else
+		actor:freeze_active_skill(Skill.SLOT.special)
+		actor:skill_util_strafe_turn_update(0.2, 0.9)
+		actor:skill_util_strafe_update(0.2, 0.9)
 	end
 	
-	if actor.closebeaconmenu == 1 and actor.callingbeacon == 1 then
-		actor:remove_skill_override(Skill.SLOT.primary, priHealing, 20)
-		actor:remove_skill_override(Skill.SLOT.secondary, priHealing, 20)
-		actor:remove_skill_override(Skill.SLOT.primary, priShocking, 20)
-		actor:remove_skill_override(Skill.SLOT.secondary, priShocking, 20)
-		actor:remove_skill_override(Skill.SLOT.primary, priResupply, 20)
-		actor:remove_skill_override(Skill.SLOT.secondary, priResupply, 20)
-		actor:remove_skill_override(Skill.SLOT.primary, priHacking, 20)
-		actor:remove_skill_override(Skill.SLOT.secondary, priHacking, 20)
-	elseif actor.closebeaconmenu == 1 and actor.callingbeacon == 0 then
+	if actor.beaconallowcancel == 1 and actor.v_skill == true and actor.sprite_index2 ~= sprite_shoot4 then
+		captain_remove_beacon_overrides(actor)
 		actor:skill_util_reset_activity_state()
 	end
 end)
 
 stbeacon:onExit(function(actor, data)
-	actor:remove_skill_override(Skill.SLOT.primary, priHealing, 20)
-	actor:remove_skill_override(Skill.SLOT.secondary, priHealing, 20)
-	actor:remove_skill_override(Skill.SLOT.primary, priShocking, 20)
-	actor:remove_skill_override(Skill.SLOT.secondary, priShocking, 20)
-	actor:remove_skill_override(Skill.SLOT.primary, priResupply, 20)
-	actor:remove_skill_override(Skill.SLOT.secondary, priResupply, 20)
-	actor:remove_skill_override(Skill.SLOT.primary, priHacking, 20)
-	actor:remove_skill_override(Skill.SLOT.secondary, priHacking, 20)
-	actor.closebeaconmenu = 0
+	captain_remove_beacon_overrides(actor)
+	actor.callcooldown = 10
+	actor.closebeaconmenu = 1
+	actor.beaconallowcancel = 0
 	if gm.audio_is_playing(data.call_sound) then
 		gm.audio_stop_sound(data.call_sound)
 	end
@@ -876,4 +959,210 @@ end)
 
 stbeacon:onGetInterruptPriority(function(actor, data)
 	return State.ACTOR_STATE_INTERRUPT_PRIORITY.skill_interrupt_period
+end)
+
+
+
+local function setupgenericbeacon(self, data)
+	data.timemax = 180
+	data.timeleft = 180
+	data.activetimer = 0
+	data.beingcalled = 1
+	data.explosionfired = 0
+	self.image_alpha = 0
+	self.image_speed = 0.2
+	self.parent = -4
+	local height = 7500
+	local offset = math.random(-200, 200)
+	local distance = GM.point_distance(self.x + offset, self.y - height - 12, self.x, self.y - 12)
+	local angle = math.deg(GM.arctan2((self.y - height - 12) - (self.y - 12), self.x - (self.x + offset)))
+	parBeaconTrailLine:set_direction(angle, angle, 0, 0)
+	parBeaconTrailLine:set_orientation(angle, angle, 0, 0, false)
+	parBeaconTrail:set_direction(angle, angle, 0, 0)
+	parBeaconTrail:set_life(distance / 45 + 2, distance / 45 + 2, 0, 0)
+	parBeaconTrail:create(self.x + offset, self.y - 12 - height)
+end
+
+local function setupgenericbeaconlanding(self, data)
+	if data.timeleft > 0 then
+		data.timeleft = data.timeleft - 1
+	end
+	
+	if data.timeleft % 5 == 0 and data.timeleft > 0 then
+		parCallB:create(self.x, self.y + 12, 1, Particle.SYSTEM.above)
+	end
+	
+	if data.timeleft <= 12 and data.explosionfired == 0 then
+		if gm._mod_net_isHost() then
+			local buff_shadow_clone = Buff.find("ror", "shadowClone")
+			for i=0, self.parent:buff_stack_count(buff_shadow_clone) do
+				local attack = self.parent:fire_explosion(self.x, self.y - 10, 270, 270, self.parent:skill_get_damage(beacon), sprite_impact, gm.constants.sSparks1S)
+				attack.attack_info:set_stun(1.5, Attack_Info.KNOCKBACK_DIR.right, Attack_Info.KNOCKBACK_KIND.none)
+				attack.attack_info.climb = i * 8
+				self.parent:sound_play(gm.constants.wTurtleExplosion, 1, 0.8)
+				self.parent:sound_play(gm.constants.wWormExplosion, 1, 0.6)
+				self:screen_shake(5)
+				data.explosionfired = 1
+			end
+		end
+	end
+		
+	if data.timeleft <= 0 and data.explosionfired == 1 then
+		self.image_alpha = 1
+		self.image_index = 0
+		data.beingcalled = 0
+	end
+end
+
+local function setupgenericbeacondraw(self, data, color, drawarearadius)
+	if data.timeleft > 12 and data.activetimer <= 0 then
+		local radius = (1 - ((data.timeleft - 12) / (data.timemax - 12))) * 135
+		gm.draw_set_colour(Color.from_rgb(70, 184, 221))
+		gm.draw_circle(self.x, self.y + 12, radius, true)
+	elseif data.activetimer > 0 and data.beingcalled == 0 and drawarearadius == true then
+		local radius = math.min(135, (1 - (data.activetimer / (data.activetimer ^ 1.7))) * 150)
+		gm.draw_set_colour(color)
+		gm.draw_circle(self.x, self.y, radius - 3, true)
+		gm.draw_circle(self.x, self.y, radius + 3, true)
+	end
+end
+
+
+
+objHealing:onCreate(function(self)
+	local data = self:get_data()
+	setupgenericbeacon(self, data)
+end)
+
+objHealing:onStep(function(self)
+	local data = self:get_data()
+	
+	if data.beingcalled == 1 then
+		setupgenericbeaconlanding(self, data)
+	else
+		data.activetimer = data.activetimer + 1
+		if data.activetimer >= 42 then
+			data.activetimer = 30
+			local heallist = List.new()
+			self:collision_ellipse_list(self.x - 135, self.y - 135, self.x + 135, self.y + 135, gm.constants.pActor, false, true, heallist, false)
+			for _, actor in ipairs(heallist) do
+				if actor.team == self.parent.team then
+					actor:heal(actor.maxhp * 0.01)
+					
+					local flash = GM.instance_create(actor.x, actor.y, gm.constants.oEfFlash)
+					flash.parent = actor
+					flash.image_blend = Color.from_rgb(189, 231, 90)
+					flash.rate = 0.05
+					flash.image_alpha = 0.5
+				end
+			end
+			heallist:destroy()
+		end
+	end
+end)
+
+objHealing:onDraw(function(self)
+	local data = self:get_data()
+	setupgenericbeacondraw(self, data, Color.from_rgb(189, 231, 90), true)
+end)
+
+
+
+objShocking:onCreate(function(self)
+	local data = self:get_data()
+	setupgenericbeacon(self, data)
+end)
+
+objShocking:onStep(function(self)
+	local data = self:get_data()
+	
+	if data.beingcalled == 1 then
+		setupgenericbeaconlanding(self, data)
+	else
+		data.activetimer = data.activetimer + 1
+	end
+end)
+
+objShocking:onDraw(function(self)
+	local data = self:get_data()
+	setupgenericbeacondraw(self, data, Color.from_rgb(150, 245, 239), false)
+end)
+
+
+
+objResupply:onCreate(function(self)
+	local data = self:get_data()
+	setupgenericbeacon(self, data)
+end)
+
+objResupply:onStep(function(self)
+	local data = self:get_data()
+	
+	if data.beingcalled == 1 then
+		setupgenericbeaconlanding(self, data)
+	else
+		data.activetimer = data.activetimer + 1
+	end
+end)
+
+objResupply:onDraw(function(self)
+	local data = self:get_data()
+	setupgenericbeacondraw(self, data, Color.from_rgb(214, 174, 90), false)
+end)
+
+
+
+objHacking:onCreate(function(self)
+	local data = self:get_data()
+	setupgenericbeacon(self, data)
+end)
+
+objHacking:onStep(function(self)
+	local data = self:get_data()
+	
+	if data.beingcalled == 1 then
+		setupgenericbeaconlanding(self, data)
+	else
+		data.activetimer = data.activetimer + 1
+	end
+end)
+
+objHacking:onDraw(function(self)
+	local data = self:get_data()
+	setupgenericbeacondraw(self, data, Color.from_rgb(255, 240, 137), true)
+end)
+
+
+
+Callback.add(Callback.TYPE.onStageStart, "captainRefreshBeacons", function()
+	for _, actor in ipairs(Instance.find_all(gm.constants.oP)) do
+		if actor.name == "Captain" then
+			if actor.beacon1charges ~= nil then
+				actor.beacon1charges = 1 + math.floor(actor:item_stack_count(Item.find("ror", "ancientScepter")) / 2) + (actor:item_stack_count(Item.find("ror", "ancientScepter")) % 2)
+			end
+			if actor.beacon2charges ~= nil then
+				actor.beacon2charges = 1 + math.floor(actor:item_stack_count(Item.find("ror", "ancientScepter")) / 2)
+			end
+			if unavailable ~= nil then
+				actor:remove_skill_override(Skill.SLOT.special, unavailable, 30)
+			end
+		end
+	end
+end)
+
+Callback.add(Callback.TYPE.onPickupCollected, "captainScepterPickup", function(pickup, actor)
+	for _, actor in ipairs(Instance.find_all(gm.constants.oP)) do
+		if actor.name == "Captain" then
+			if pickup.item_id == 77 then
+				if actor.beacon1charges ~= nil and actor.beacon2charges ~= nil and unavailable ~= nil then
+					actor:remove_skill_override(Skill.SLOT.special, unavailable, 30)
+					if actor:item_stack_count(Item.find("ror", "ancientScepter")) % 2 == 0 then
+						actor.beacon1charges = actor.beacon1charges + 1
+					else
+						actor.beacon2charges = actor.beacon2charges + 1
+					end
+				end
+			end
+		end
+	end
 end)
