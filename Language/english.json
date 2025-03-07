@@ -68,7 +68,7 @@
 "item" : {
 	"defensiveMicrobots" : {
 		"name" : "Defensive Microbots",
-		"pickup": "Shoot down nearby projectiles. Recharge rate scales with attack speed.",
+		"pickup": "Shoot down nearby projectiles. Recharge rate scales with the amount of drones you have.",
 		"description": "Shoot down projectiles within <y>20m</c> <c_stack>(+10m per stack)</c> every <y>0.5 seconds</c>. <b>Recharge rate scales with the amount of drones you have</c>.",
 		"destination": "<r>TOP SECRET</c>",
 		"date": "08/11/2056",

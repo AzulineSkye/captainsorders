@@ -22,11 +22,11 @@ local sprite_shoot2 = Resources.sprite_load(NAMESPACE, "captainShoot2", path.com
 local sprite_shoot3 = Resources.sprite_load(NAMESPACE, "captainShoot3", path.combine(PATH, "Sprites/shoot3.png"), 3, 14, 20)
 local sprite_call = Resources.sprite_load(NAMESPACE, "captainCall", path.combine(PATH, "Sprites/call.png"), 1, 12, 20)
 local sprite_shoot4	= Resources.sprite_load(NAMESPACE, "captainShoot4", path.combine(PATH, "Sprites/shoot4.png"), 8, 14, 20)
-local sprite_healing = Resources.sprite_load(NAMESPACE, "captainBeaconHealing", path.combine(PATH, "Sprites/beaconHealing.png"), 11, 20, 50)
-local sprite_shocking = Resources.sprite_load(NAMESPACE, "captainBeaconShocking", path.combine(PATH, "Sprites/beaconShocking.png"), 11, 20, 50)
-local sprite_resupply = Resources.sprite_load(NAMESPACE, "captainBeaconResupply", path.combine(PATH, "Sprites/beaconResupply.png"), 11, 20, 50)
-local sprite_hacking = Resources.sprite_load(NAMESPACE, "captainBeaconHacking", path.combine(PATH, "Sprites/beaconHacking.png"), 11, 20, 50)
-local sprite_impact = Resources.sprite_load(NAMESPACE, "captainBeaconImpact", path.combine(PATH, "Sprites/beaconimpact.png"), 5, 117, 200)
+local sprite_healing = Resources.sprite_load(NAMESPACE, "captainBeaconHealing", path.combine(PATH, "Sprites/beaconHealing.png"), 11, 20, 51)
+local sprite_shocking = Resources.sprite_load(NAMESPACE, "captainBeaconShocking", path.combine(PATH, "Sprites/beaconShocking.png"), 11, 20, 51)
+local sprite_resupply = Resources.sprite_load(NAMESPACE, "captainBeaconResupply", path.combine(PATH, "Sprites/beaconResupply.png"), 11, 20, 51)
+local sprite_hacking = Resources.sprite_load(NAMESPACE, "captainBeaconHacking", path.combine(PATH, "Sprites/beaconHacking.png"), 11, 20, 51)
+local sprite_impact = Resources.sprite_load(NAMESPACE, "captainBeaconImpact", path.combine(PATH, "Sprites/beaconimpact.png"), 5, 117, 203)
 
 local cap = Survivor.new(NAMESPACE, "captain")
 local cap_id = cap.value
@@ -175,13 +175,71 @@ parBeaconTrail:set_speed(44.85, 44.85, 0, 0)
 parBeaconTrail:set_sprite(gm.constants.sSparks8, false, false, false)
 parBeaconTrail:set_step(1, parBeaconTrailLine)
 
+local parHealing = Particle.new(NAMESPACE, "particleCaptainBeaconHealing")
+parHealing:set_sprite(gm.constants.sEfHeal, true, true, false)
+parHealing:set_speed(0.02, 0.05, 0, 0)
+parHealing:set_direction(270, 270, 0, 0)
+parHealing:set_life(120, 240)
+
+local parShocking = Particle.new(NAMESPACE, "particleCaptainShock")
+parShocking:set_sprite(gm.constants.sEfJewelSparkleSmall, false, false, false)
+parShocking:set_color1(Color.from_rgb(76, 110, 239))
+parShocking:set_speed(0.05, 0.1, 0, 0)
+parShocking:set_orientation(0, 360, 0, 0, false)
+parShocking:set_direction(0, 360, 0, 0)
+parShocking:set_life(90, 180)
+parShocking:set_scale(2, 2)
+parShocking:set_alpha3(1, 1, 0)
 
 
 --Buffs
 local shock = Buff.new(NAMESPACE, "captainShock")
-shock:clear_callbacks()
 shock.is_debuff = true
 shock.show_icon = false
+shock:clear_callbacks()
+
+shock:onApply(function(actor, stack)
+	actor.activity_type = 50
+	actor.__activity_handler_state = 50
+	actor.captainshockthreshold = actor.hp * 0.9
+	actor.captainshocklightningprevposx = actor.x
+	actor.captainshocklightningprevposy = actor.y
+end)
+
+shock:onPostStep(function(actor, stack)
+	actor.activity_type = 50
+	actor.__activity_handler_state = 50
+	actor.pHmax = 0
+	actor.state = 0
+	if actor.sprite_death ~= nil then
+		actor.sprite_index = actor.sprite_death
+		actor.image_index = 0
+	end
+end)
+
+shock:onPostDraw(function(actor, stack)
+	local height = gm.round(gm.sprite_get_height(actor.sprite_idle) / 2)
+	local width = gm.round(gm.sprite_get_width(actor.sprite_idle) / 2)
+	local randomx = actor.x + math.random(-width, width)
+	local randomy = actor.y + math.random(-height, height)
+	gm.draw_lightning(actor.captainshocklightningprevposx, actor.captainshocklightningprevposy, randomx, randomy, Color.from_rgb(150, 245, 239))
+	actor.captainshocklightningprevposx = randomx
+	actor.captainshocklightningprevposy = randomy
+	if math.random() <= 0.015 then
+		parShocking:create(actor.x + math.random(-width, width), actor.y + math.random(-height, height))
+	end
+end)
+
+shock:onDamagedProc(function(actor, attacker, stack, hit_info)
+	if actor.hp <= actor.captainshockthreshold and hit_info.attack_info.captaininflictshock ~= true then
+		actor:buff_remove(shock)
+	end
+end)
+
+shock:onRemove(function(actor, stack)
+	actor.activity_type = 0
+	actor.__activity_handler_state = 0
+end)
 
 
 
@@ -520,10 +578,21 @@ objTazer:onStep(function(self)
 				local buff_shadow_clone = Buff.find("ror", "shadowClone")
 				for i=0, self.parent:buff_stack_count(buff_shadow_clone) do
 					local attack = self.parent:fire_explosion(self.x, self.y, 120, 120, self.parent:skill_get_damage(tazer), gm.constants.sEfArtiStarExplode2, gm.constants.sEfGoldSparkleBig)
-					attack.attack_info:set_stun(5, Attack_Info.KNOCKBACK_DIR.right, Attack_Info.KNOCKBACK_KIND.none)
 					attack.attack_info.climb = i * 8
 				end
 			end
+			local shocklist = List.new()
+			self:collision_ellipse_list(self.x - 60, self.y - 60, self.x + 60, self.y + 60, gm.constants.pActorCollisionBase, false, true, shocklist, false)
+			for _, victim in ipairs(shocklist) do
+				if victim.team ~= self.parent.team and victim.activity_type ~= 90 and victim.__activity_handler_state ~= 90 then
+					if victim:buff_stack_count(shock) <= 0 then
+						GM.apply_buff(victim, shock, 5 * 60, 1)
+					else
+						GM.set_buff_time(victim, shock, 5 * 60)
+					end
+				end
+			end
+			shocklist:destroy()
 			self:destroy()
 		end
 	end
@@ -970,7 +1039,7 @@ local function setupgenericbeacon(self, data)
 	data.beingcalled = 1
 	data.explosionfired = 0
 	self.image_alpha = 0
-	self.image_speed = 0.2
+	self.image_speed = 0
 	self.parent = -4
 	local height = 7500
 	local offset = math.random(-200, 200)
@@ -1019,11 +1088,14 @@ local function setupgenericbeacondraw(self, data, color, drawarearadius)
 		local radius = (1 - ((data.timeleft - 12) / (data.timemax - 12))) * 135
 		gm.draw_set_colour(Color.from_rgb(70, 184, 221))
 		gm.draw_circle(self.x, self.y + 12, radius, true)
-	elseif data.activetimer > 0 and data.beingcalled == 0 and drawarearadius == true then
-		local radius = math.min(135, (1 - (data.activetimer / (data.activetimer ^ 1.7))) * 150)
-		gm.draw_set_colour(color)
-		gm.draw_circle(self.x, self.y, radius - 3, true)
-		gm.draw_circle(self.x, self.y, radius + 3, true)
+	elseif data.beingcalled == 0 then
+		self.image_speed = math.min(0.2, ((data.activetimer / 60) ^ 1.9) * 0.2)
+		if data.activetimer > 30 and drawarearadius == true then
+			local radius = math.min(135, (1 - (math.max(1, data.activetimer - 30) / (math.max(1, data.activetimer - 30) ^ 1.7))) * 150)
+			gm.draw_set_colour(color)
+			gm.draw_circle(self.x, self.y, radius - 3, true)
+			gm.draw_circle(self.x, self.y, radius + 3, true)
+		end
 	end
 end
 
@@ -1041,13 +1113,13 @@ objHealing:onStep(function(self)
 		setupgenericbeaconlanding(self, data)
 	else
 		data.activetimer = data.activetimer + 1
-		if data.activetimer >= 42 then
-			data.activetimer = 30
+		if data.activetimer >= 72 then
+			data.activetimer = 60
 			local heallist = List.new()
-			self:collision_ellipse_list(self.x - 135, self.y - 135, self.x + 135, self.y + 135, gm.constants.pActor, false, true, heallist, false)
+			self:collision_ellipse_list(self.x - 135, self.y - 135, self.x + 135, self.y + 135, gm.constants.pActorCollisionBase, false, true, heallist, false)
 			for _, actor in ipairs(heallist) do
 				if actor.team == self.parent.team then
-					actor:heal(actor.maxhp * 0.01)
+					actor:heal(gm.round(actor.maxhp * 0.02))
 					
 					local flash = GM.instance_create(actor.x, actor.y, gm.constants.oEfFlash)
 					flash.parent = actor
@@ -1057,6 +1129,11 @@ objHealing:onStep(function(self)
 				end
 			end
 			heallist:destroy()
+			local particlex = self.x + math.random(-135, 135)
+			local particley = self.y + math.random(-135, 135)
+			if gm.point_distance(self.x, self.y, particlex, particley) <= 130 then
+				parHealing:create(particlex, particley)
+			end
 		end
 	end
 end)
@@ -1070,6 +1147,7 @@ end)
 
 objShocking:onCreate(function(self)
 	local data = self:get_data()
+	data.allowlightning = 0
 	setupgenericbeacon(self, data)
 end)
 
@@ -1080,12 +1158,54 @@ objShocking:onStep(function(self)
 		setupgenericbeaconlanding(self, data)
 	else
 		data.activetimer = data.activetimer + 1
+		if data.activetimer >= 240 then
+			data.activetimer = 60
+			local shocklist = List.new()
+			self:collision_ellipse_list(self.x - 135, self.y - 135, self.x + 135, self.y + 135, gm.constants.pActorCollisionBase, false, true, shocklist, false)
+			for _, actor in ipairs(shocklist) do
+				if actor.team ~= self.parent.team and actor.activity_type ~= 90 and actor.__activity_handler_state ~= 90 then
+					if actor:buff_stack_count(shock) <= 0 then
+						GM.apply_buff(actor, shock, 5 * 60, 1)
+					else
+						GM.set_buff_time(actor, shock, 5 * 60)
+					end
+				end
+			end
+			shocklist:destroy()
+			self:sound_play(gm.constants.wArtiShoot4_3, 0.4, 1)
+			self:sound_play(gm.constants.wChainLightning, 0.6, 1)
+			local objsparks = Object.find("ror", "efSparks")
+			local sparks = objsparks:create(self.x, self.y)
+			sparks.sprite_index = gm.constants.sEfSuperMissileExplosionS
+			sparks.image_alpha = 0.75
+			if data.allowlightning == 0 then
+				data.allowlightning = 1
+			end
+		end
 	end
 end)
 
 objShocking:onDraw(function(self)
 	local data = self:get_data()
 	setupgenericbeacondraw(self, data, Color.from_rgb(150, 245, 239), false)
+	if data.activetimer >= 60 and data.activetimer <= 80 and data.allowlightning == 1 then
+		local shocklist = List.new()
+		self:collision_ellipse_list(self.x - 135, self.y - 135, self.x + 135, self.y + 135, gm.constants.pActorCollisionBase, false, true, shocklist, false)
+		for _, actor in ipairs(shocklist) do
+			if actor.team ~= self.parent.team and actor:buff_stack_count(shock) > 0 then
+				gm.draw_set_colour(Color.from_rgb(150, 245, 239))
+				gm.draw_set_alpha(0.75)
+				gm.draw_lightning(self.x, self.y, actor.x, actor.y, Color.from_rgb(150, 245, 239))
+				gm.draw_set_alpha(1)
+			end
+		end
+		shocklist:destroy()
+		local radius = math.min(135, (1 - (math.max(1, data.activetimer - 60) / (math.max(1, data.activetimer - 60) ^ 1.7))) * 150)
+		gm.draw_set_colour(Color.from_rgb(150, 245, 239))
+		gm.draw_set_alpha(1 - (data.activetimer - 60) / 20)
+		gm.draw_circle(self.x, self.y, radius, true)
+		gm.draw_set_alpha(1)
+	end
 end)
 
 

@@ -77,7 +77,7 @@ bots:onPreStep(function(actor, stack)
 		if deletedbullet ~= nil then
 			actor:sound_play(gm.constants.wHANDShoot2_2, 1, 1.5)
 			if actor.instmicrobots ~= nil then
-				local objtracer = Object.find("ror-efLineTracer")
+				local objtracer = Object.find("ror", "efLineTracer")
 				local tracer = objtracer:create(actor.instmicrobots.x, actor.instmicrobots.y)
 				tracer.xend = deletedbullet.x
 				tracer.yend = deletedbullet.y
@@ -85,7 +85,7 @@ bots:onPreStep(function(actor, stack)
 				tracer.rate = 0.1
 				tracer.width = 2
 				tracer.image_blend = Color.from_rgb(255, 222, 133)
-				local objsparks = Object.find("ror-efSparks")
+				local objsparks = Object.find("ror", "efSparks")
 				local sparks = objsparks:create(deletedbullet.x, deletedbullet.y)
 				sparks.sprite_index = gm.constants.sSparksIce
 				sparks.image_blend = Color.from_rgb(255, 222, 133)
