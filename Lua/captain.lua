@@ -191,12 +191,6 @@ parShocking:set_life(90, 180)
 parShocking:set_scale(2, 2)
 parShocking:set_alpha3(1, 1, 0)
 
-local parShocking2 = Particle.new(NAMESPACE, "particleCaptainShock2")
-parShocking2:set_sprite(gm.constants.sSparks2, true, true, false)
-parShocking2:set_orientation(0, 360, 0, 360, false)
-parShocking2:set_life(10, 10)
-parShocking2:set_scale(0.5, 0.5)
-
 
 --Buffs
 local shock = Buff.new(NAMESPACE, "captainShock")
@@ -210,7 +204,6 @@ shock:onApply(function(actor, stack)
 	actor.captainshockthreshold = actor.hp * 0.9
 	actor.captainshocklightningprevposx = actor.x
 	actor.captainshocklightningprevposy = actor.y
-	actor.shocktimerthingy = 0
 end)
 
 shock:onPostStep(function(actor, stack)
@@ -229,15 +222,9 @@ shock:onPostDraw(function(actor, stack)
 	local width = gm.round(gm.sprite_get_width(actor.sprite_idle) / 2)
 	local randomx = actor.x + math.random(-width, width)
 	local randomy = actor.y + math.random(-height, height)
-	--insanely laggy
-	--gm.draw_lightning(actor.captainshocklightningprevposx, actor.captainshocklightningprevposy, randomx, randomy, Color.from_rgb(150, 245, 239))
-	--actor.captainshocklightningprevposx = randomx
-	--actor.captainshocklightningprevposy = randomy
-	actor.shocktimerthingy = actor.shocktimerthingy + 1
-	if actor.shocktimerthingy >= 10 then
-		parShocking2:create(actor.x + math.random(-width, width), actor.y + math.random(-height, height))
-		actor.shocktimerthingy = 0
-	end
+	gm.draw_lightning(actor.captainshocklightningprevposx, actor.captainshocklightningprevposy, randomx, randomy, Color.from_rgb(150, 245, 239))
+	actor.captainshocklightningprevposx = randomx
+	actor.captainshocklightningprevposy = randomy
 	if math.random() <= 0.015 then
 		parShocking:create(actor.x + math.random(-width, width), actor.y + math.random(-height, height))
 	end
@@ -1199,18 +1186,12 @@ objShocking:onDraw(function(self)
 	if data.activetimer >= 60 and data.activetimer <= 80 and data.allowlightning == 1 then
 		local shocklist = List.new()
 		self:collision_ellipse_list(self.x - 135, self.y - 135, self.x + 135, self.y + 135, gm.constants.pActorCollisionBase, false, true, shocklist, false)
-		local shocklimit = 5
 		for _, actor in ipairs(shocklist) do
 			if actor.team ~= self.parent.team and actor.activity_type ~= 90 and actor.__activity_handler_state ~= 90 and not GM.actor_is_boss(actor) and actor.object_index ~= gm.constants.oWormBody and actor.object_index ~= gm.constants.oWurmBody and actor.object_index ~= gm.constants.oBrambleBody and actor:buff_stack_count(shock) > 0 then
 				gm.draw_set_colour(Color.from_rgb(150, 245, 239))
 				gm.draw_set_alpha(0.75)
 				gm.draw_lightning(self.x, self.y, actor.x, actor.y, Color.from_rgb(150, 245, 239))
 				gm.draw_set_alpha(1)
-				shocklimit = shocklimit - 1
-				--prevents too many lightnings drawing at the same time causing insane lag
-				if shocklimit <= 0 then
-					break
-				end
 			end
 		end
 		shocklist:destroy()
