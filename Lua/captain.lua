@@ -191,6 +191,12 @@ parShocking:set_life(90, 180)
 parShocking:set_scale(2, 2)
 parShocking:set_alpha3(1, 1, 0)
 
+local parShocking2 = Particle.new(NAMESPACE, "particleCaptainShock2")
+parShocking2:set_sprite(gm.constants.sSparks2, true, true, false)
+parShocking2:set_orientation(0, 360, 0, 360, false)
+parShocking2:set_life(10, 10)
+parShocking2:set_scale(0.5, 0.5)
+
 
 --Buffs
 local shock = Buff.new(NAMESPACE, "captainShock")
@@ -204,6 +210,7 @@ shock:onApply(function(actor, stack)
 	actor.captainshockthreshold = actor.hp * 0.9
 	actor.captainshocklightningprevposx = actor.x
 	actor.captainshocklightningprevposy = actor.y
+	actor.shocktimerthingy = 0
 end)
 
 shock:onPostStep(function(actor, stack)
@@ -222,16 +229,22 @@ shock:onPostDraw(function(actor, stack)
 	local width = gm.round(gm.sprite_get_width(actor.sprite_idle) / 2)
 	local randomx = actor.x + math.random(-width, width)
 	local randomy = actor.y + math.random(-height, height)
-	gm.draw_lightning(actor.captainshocklightningprevposx, actor.captainshocklightningprevposy, randomx, randomy, Color.from_rgb(150, 245, 239))
-	actor.captainshocklightningprevposx = randomx
-	actor.captainshocklightningprevposy = randomy
+	--insanely laggy
+	--gm.draw_lightning(actor.captainshocklightningprevposx, actor.captainshocklightningprevposy, randomx, randomy, Color.from_rgb(150, 245, 239))
+	--actor.captainshocklightningprevposx = randomx
+	--actor.captainshocklightningprevposy = randomy
+	actor.shocktimerthingy = actor.shocktimerthingy + 1
+	if actor.shocktimerthingy >= 10 then
+		parShocking2:create(actor.x + math.random(-width, width), actor.y + math.random(-height, height))
+		actor.shocktimerthingy = 0
+	end
 	if math.random() <= 0.015 then
 		parShocking:create(actor.x + math.random(-width, width), actor.y + math.random(-height, height))
 	end
 end)
 
 shock:onDamagedProc(function(actor, attacker, stack, hit_info)
-	if actor.hp <= actor.captainshockthreshold and hit_info.attack_info.captaininflictshock ~= true then
+	if actor.hp <= actor.captainshockthreshold and hit_info.attack_info.captaininflictshock ~= 1 then
 		actor:buff_remove(shock)
 	end
 end)
@@ -579,20 +592,9 @@ objTazer:onStep(function(self)
 				for i=0, self.parent:buff_stack_count(buff_shadow_clone) do
 					local attack = self.parent:fire_explosion(self.x, self.y, 120, 120, self.parent:skill_get_damage(tazer), gm.constants.sEfArtiStarExplode2, gm.constants.sEfGoldSparkleBig)
 					attack.attack_info.climb = i * 8
+					attack.attack_info.captaininflictshock = 1
 				end
 			end
-			local shocklist = List.new()
-			self:collision_ellipse_list(self.x - 60, self.y - 60, self.x + 60, self.y + 60, gm.constants.pActorCollisionBase, false, true, shocklist, false)
-			for _, victim in ipairs(shocklist) do
-				if victim.team ~= self.parent.team and victim.activity_type ~= 90 and victim.__activity_handler_state ~= 90 then
-					if victim:buff_stack_count(shock) <= 0 then
-						GM.apply_buff(victim, shock, 5 * 60, 1)
-					else
-						GM.set_buff_time(victim, shock, 5 * 60)
-					end
-				end
-			end
-			shocklist:destroy()
 			self:destroy()
 		end
 	end
@@ -620,6 +622,15 @@ sttazer:onStep(function(actor, data)
 	actor:skill_util_exit_state_on_anim_end()
 end)
 
+Callback.add(Callback.TYPE.onAttackHit, "captainInflictShock", function(hit_info)
+	if hit_info.attack_info.captaininflictshock == 1 then
+		victim = hit_info.target
+		if victim.team ~= hit_info.inflictor and victim.activity_type ~= 90 and victim.__activity_handler_state ~= 90 and not GM.actor_is_boss(victim) and victim.object_index ~= gm.constants.oWormBody and victim.object_index ~= gm.constants.oWurmBody and victim.object_index ~= gm.constants.oBrambleBody then
+			GM.apply_buff(victim, shock, 5 * 60, 1)
+			GM.set_buff_time(victim, shock, 5 * 60)
+		end
+	end
+end)
 
 
 --Orbital Probe
@@ -1116,7 +1127,7 @@ objHealing:onStep(function(self)
 		if data.activetimer >= 72 then
 			data.activetimer = 60
 			local heallist = List.new()
-			self:collision_ellipse_list(self.x - 135, self.y - 135, self.x + 135, self.y + 135, gm.constants.pActorCollisionBase, false, true, heallist, false)
+			self:collision_ellipse_list(self.x - 135, self.y - 135, self.x + 135, self.y + 135, gm.constants.pActor, false, true, heallist, false)
 			for _, actor in ipairs(heallist) do
 				if actor.team == self.parent.team then
 					actor:heal(gm.round(actor.maxhp * 0.02))
@@ -1163,7 +1174,7 @@ objShocking:onStep(function(self)
 			local shocklist = List.new()
 			self:collision_ellipse_list(self.x - 135, self.y - 135, self.x + 135, self.y + 135, gm.constants.pActorCollisionBase, false, true, shocklist, false)
 			for _, actor in ipairs(shocklist) do
-				if actor.team ~= self.parent.team and actor.activity_type ~= 90 and actor.__activity_handler_state ~= 90 then
+				if actor.team ~= self.parent.team and actor.activity_type ~= 90 and actor.__activity_handler_state ~= 90 and not GM.actor_is_boss(actor) and actor.object_index ~= gm.constants.oWormBody and actor.object_index ~= gm.constants.oWurmBody and actor.object_index ~= gm.constants.oBrambleBody then
 					if actor:buff_stack_count(shock) <= 0 then
 						GM.apply_buff(actor, shock, 5 * 60, 1)
 					else
@@ -1191,12 +1202,18 @@ objShocking:onDraw(function(self)
 	if data.activetimer >= 60 and data.activetimer <= 80 and data.allowlightning == 1 then
 		local shocklist = List.new()
 		self:collision_ellipse_list(self.x - 135, self.y - 135, self.x + 135, self.y + 135, gm.constants.pActorCollisionBase, false, true, shocklist, false)
+		local shocklimit = 5
 		for _, actor in ipairs(shocklist) do
-			if actor.team ~= self.parent.team and actor:buff_stack_count(shock) > 0 then
+			if actor.team ~= self.parent.team and actor.activity_type ~= 90 and actor.__activity_handler_state ~= 90 and not GM.actor_is_boss(actor) and actor.object_index ~= gm.constants.oWormBody and actor.object_index ~= gm.constants.oWurmBody and actor.object_index ~= gm.constants.oBrambleBody and actor:buff_stack_count(shock) > 0 then
 				gm.draw_set_colour(Color.from_rgb(150, 245, 239))
 				gm.draw_set_alpha(0.75)
 				gm.draw_lightning(self.x, self.y, actor.x, actor.y, Color.from_rgb(150, 245, 239))
 				gm.draw_set_alpha(1)
+				shocklimit = shocklimit - 1
+				--prevents too many lightnings drawing at the same time causing insane lag
+				if shocklimit <= 0 then
+					break
+				end
 			end
 		end
 		shocklist:destroy()
