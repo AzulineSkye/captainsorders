@@ -1175,11 +1175,8 @@ objShocking:onStep(function(self)
 			self:collision_ellipse_list(self.x - 135, self.y - 135, self.x + 135, self.y + 135, gm.constants.pActorCollisionBase, false, true, shocklist, false)
 			for _, actor in ipairs(shocklist) do
 				if actor.team ~= self.parent.team and actor.activity_type ~= 90 and actor.__activity_handler_state ~= 90 and not GM.actor_is_boss(actor) and actor.object_index ~= gm.constants.oWormBody and actor.object_index ~= gm.constants.oWurmBody and actor.object_index ~= gm.constants.oBrambleBody then
-					if actor:buff_stack_count(shock) <= 0 then
-						GM.apply_buff(actor, shock, 5 * 60, 1)
-					else
-						GM.set_buff_time(actor, shock, 5 * 60)
-					end
+					GM.apply_buff(actor, shock, 5 * 60, 1)
+					GM.set_buff_time(actor, shock, 5 * 60)
 				end
 			end
 			shocklist:destroy()
