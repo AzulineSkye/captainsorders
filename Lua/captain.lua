@@ -27,6 +27,7 @@ local sprite_shocking = Resources.sprite_load(NAMESPACE, "captainBeaconShocking"
 local sprite_resupply = Resources.sprite_load(NAMESPACE, "captainBeaconResupply", path.combine(PATH, "Sprites/beaconResupply.png"), 11, 20, 51)
 local sprite_hacking = Resources.sprite_load(NAMESPACE, "captainBeaconHacking", path.combine(PATH, "Sprites/beaconHacking.png"), 11, 20, 51)
 local sprite_impact = Resources.sprite_load(NAMESPACE, "captainBeaconImpact", path.combine(PATH, "Sprites/beaconimpact.png"), 5, 117, 203)
+local sprite_bar = Resources.sprite_load(NAMESPACE, "captainBeaconHackingBar", path.combine(PATH, "Sprites/beaconHackingBar.png"), 1, 23, 5)
 
 local cap = Survivor.new(NAMESPACE, "captain")
 local cap_id = cap.value
@@ -201,7 +202,7 @@ shock:clear_callbacks()
 shock:onApply(function(actor, stack)
 	actor.activity_type = 50
 	actor.__activity_handler_state = 50
-	actor.captainshockthreshold = actor.hp * 0.9
+	actor.captainshockthreshold = actor.maxhp * 0.1
 	actor.captainshocklightningprevposx = actor.x
 	actor.captainshocklightningprevposy = actor.y
 end)
@@ -231,7 +232,7 @@ shock:onPostDraw(function(actor, stack)
 end)
 
 shock:onDamagedProc(function(actor, attacker, stack, hit_info)
-	if actor.hp <= actor.captainshockthreshold and hit_info.attack_info.captaininflictshock ~= 1 then
+	if hit_info.damage >= actor.captainshockthreshold then
 		actor:buff_remove(shock)
 	end
 end)
@@ -1239,13 +1240,102 @@ objHacking:onStep(function(self)
 		setupgenericbeaconlanding(self, data)
 	else
 		data.activetimer = data.activetimer + 1
+		if data.activetimer >= 60 then
+			local hacklist = List.new()
+			self:collision_ellipse_list(self.x - 135, self.y - 135, self.x + 135, self.y + 135, gm.constants.pInteractable, false, true, hacklist, true)
+			for _, chest in ipairs(hacklist) do
+				if chest.object_index == gm.constants.oHiddenHand and chest.captainhacked == nil then
+					if chest.captainhacktimer == nil then
+						chest.captainhacktimer = 0
+					end
+					if chest.captainhacktimer >= 15 * 60 then
+						local drone = Object.find("ror", "Drone1"):create(chest.x, chest.y)
+						drone.sprite_idle = gm.constants.sDronePlayerHANDIdle
+						drone.sprite_idle_broken = gm.constants.sDronePlayerHANDIdle
+						drone.sprite_shoot1 = gm.constants.sDronePlayerHANDShoot
+						drone.sprite_shoot1_broken = gm.constants.sDronePlayerHANDShoot
+						local items = self.parent.inventory_item_order
+						local stack = self.parent.inventory_item_stack
+						for _, item in ipairs(items) do
+							drone:item_give(item, stack[item + 1], 1)
+						end
+						chest.captainhacked = 1
+						chest.active = 1
+					else
+						chest.captainhacktimer = chest.captainhacktimer  + 1
+						break
+					end
+				elseif chest.object_index == gm.constants.oDoor and chest.active < 1 then
+					if chest.captainhacktimer == nil then
+						chest.captainhacktimer = 0
+					end
+					if chest.captainhacktimer >= 15 * 60 then
+						chest.cost_type = 1
+						chest.cost = 0
+						if chest.captainhacked == nil then
+							chest.active = 1
+						end
+						chest.activator = self.parent
+						chest.captainhacked = 1
+					else
+						chest.captainhacktimer = chest.captainhacktimer  + 1
+						break
+					end
+				elseif (chest.cost ~= nil and chest.cost > 0 and chest.cost_type == 0) and chest.active < 1 then
+					if chest.captainhacktimer == nil then
+						chest.captainhacktimer = 0
+					end
+					if chest.captainhacktimer >= chest.cost * 9 then
+						chest.cost = 0
+						if chest.captainhacked == nil then
+							chest.active = 1
+						end
+						chest.activator = self.parent
+						chest.captainhacked = 1
+					else
+						chest.captainhacktimer = chest.captainhacktimer + GM._mod_game_getDirector().stage_chest_cost_scale
+						break
+					end
+				end
+			end
+			hacklist:destroy()
+		end
 	end
 end)
 
 objHacking:onDraw(function(self)
 	local data = self:get_data()
 	setupgenericbeacondraw(self, data, Color.from_rgb(255, 240, 137), true)
+	if data.activetimer >= 60 then
+		local hacklist = List.new()
+		self:collision_ellipse_list(self.x - 135, self.y - 135, self.x + 135, self.y + 135, gm.constants.pInteractable, false, true, hacklist, true)
+		for _, chest in ipairs(hacklist) do
+			if chest.object_index == gm.constants.oHiddenHand and chest.captainhacked == nil then
+				gm.draw_set_colour(Color.from_rgb(255, 240, 137))
+				gm.draw_lightning(self.x, self.y - 27, chest.x + 42, chest.y + 32, Color.from_rgb(255, 240, 137))
+				gm.draw_rectangle(chest.x + 22, chest.y + 3, gm.lerp(chest.x + 22, chest.x + 62, chest.captainhacktimer / (15 * 60)), chest.y - 2, false)
+				gm.draw_sprite(sprite_bar, 0, chest.x + 42, chest.y)
+				break
+			elseif chest.object_index == gm.constants.oDoor and chest.active < 1 then
+				gm.draw_set_colour(Color.from_rgb(255, 240, 137))
+				gm.draw_lightning(self.x, self.y - 27, chest.x + 16, chest.y + 33, Color.from_rgb(255, 240, 137))
+				gm.draw_rectangle(chest.x - 5, chest.y - 15, gm.lerp(chest.x - 5, chest.x + 35, chest.captainhacktimer / (15 * 60)), chest.y - 10, false)
+				gm.draw_sprite(sprite_bar, 0, chest.x + 16, chest.y - 13)
+				break
+			elseif (chest.cost ~= nil and chest.cost > 0 and chest.cost_type == 0) and chest.active < 1 and chest.captainhacktimer ~= nil and chest.captainhacked == nil then
+				gm.draw_set_colour(Color.from_rgb(255, 240, 137))
+				local yy = chest.y - gm.round(gm.sprite_get_height(chest.sprite_index) * 0.25)
+				gm.draw_lightning(self.x, self.y - 27, chest.x, yy, Color.from_rgb(255, 240, 137))
+				gm.draw_rectangle(chest.x - 20, yy - 35, gm.lerp(chest.x - 20, chest.x + 20, chest.captainhacktimer / (chest.cost * 9)), yy - 30, false)
+				gm.draw_sprite(sprite_bar, 0, chest.x, yy - 33)
+				break
+			end
+		end
+		hacklist:destroy()
+	end
 end)
+
+
 
 
 
@@ -1279,5 +1369,13 @@ Callback.add(Callback.TYPE.onPickupCollected, "captainScepterPickup", function(p
 				end
 			end
 		end
+	end
+end)
+
+--prevents the game from crashing if the player has a mocha when the secret hacking interaction happens
+--dont ask
+gm.pre_script_hook(gm.constants.actor_skin_skinnable_set_skin, function(self, other, result, args)
+	if gm.object_is_ancestor(args[1].value.object_index, gm.constants.pDrone) then
+		return false
 	end
 end)
