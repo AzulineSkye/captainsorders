@@ -64,6 +64,10 @@ cap.sprite_portrait = sprite_portrait
 cap.sprite_portrait_small = sprite_portrait_small
 cap.sprite_title = sprite_walk
 
+local cap_log = Survivor_Log.new(cap, sprite_log, sprite_walk)
+cap_log.stat_regen_base = 0.01
+cap_log.stat_regen_level = 0.002
+
 cap:clear_callbacks()
 
 cap:onInit(function(actor)
@@ -1380,7 +1384,3 @@ gm.pre_script_hook(gm.constants.actor_skin_skinnable_set_skin, function(self, ot
 		return false
 	end
 end)
-
-local cap_log = Survivor_Log.new(cap, sprite_log, sprite_walk)
-cap_log.stat_regen_base = 0.01
-cap_log.stat_regen_level = 0.002
