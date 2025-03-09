@@ -1382,5 +1382,5 @@ gm.pre_script_hook(gm.constants.actor_skin_skinnable_set_skin, function(self, ot
 end)
 
 local cap_log = Survivor_Log.new(cap, sprite_log, sprite_walk)
-cap_log.stat_regen_base = 0.60
-cap_log.stat_regen_level = 0.12
+cap_log.stat_regen_base = 0.01
+cap_log.stat_regen_level = 0.002

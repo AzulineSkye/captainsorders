@@ -5,7 +5,10 @@
 		"nameUpper" : "CAPTAIN",
 		"description": "The <y>Captain</c> is a unique survivor that can provide utility and support on the battlefield with his <y>Orbital Supply Beacons</c> and <y>Defensive Microbots</c>. Combining a <y>Power Tazer</c> with <y>Orbital Probe</c> strikes will devastate most crowds with ease, while shots from your trusty <y>Vulcan Shotgun</c> can help with clearing up whatever remains.",
 		"endQuote": "..and so he left, with a new tale to tell.",
-		"story": "'A rescue mission?' \n\nThe old man leaned forward, scanning the document slid over his desk. His eyes paused on a collection of words near the bottom: UES Contact Light. \n\n'Yes.' \n\nHe continued to read the document. The Safe Travels? For a rescue mission? As one of the few surviving captains of the old colony ships, he knew all the designations by memory – and the Safe Travels was not a rescue ship. \n\n'Any armaments?' \n\n'No.' \n\n'We'll have to fix that.' \n\nWith a sigh, he stood up. His prosthetics tugged at his joints – despite being lighter than his original limbs, they always felt heavy. \n\n'And let me guess - top secret, right?' \n\n'Yes.' \n\nHe gave out another sigh – they're always top secret - but a small smile crept onto his face. He glanced up to his old radio helmet. He's been bored in retirement anyways.",
+		"story": "<ul>Passenger Details:</c>\n<g>[Employee Class]</c>\n\n<ul>Employee Details:</c>\nI'm excited to announce that the UES has chosen one of its finest captains for this shipping mission. He has successfully overseen dozens of similiar missions ever since entering retirement from the military back in 2037, and I don't expect this one to be any different. Treat him with utmost care and respect.\n\n<b>[SECURITY RECALL]</c>\n<ul>[Event C1]</c> Employee requested a contracted commando to deliver a parcel into their quarters. Request granted.\n<ul>[Event C2]</c> Employee observed inspecting the contents of their parcel. The contents of the parcel seem to be multiple unidentified metal spheres. Whirring and chirping could be heard during the inspection.",
+		"arrival": "<y>Destination:</c>\nUES Shipping Dock 0,\nRedview,\nMars",
+		"departure": "<y>Departure:</c>\nUES Shipping Dock 5,\nRedview,\nMars",
+		"id": "Travel ID: 13138303C4145425359425544414F4C4C4C414D435",
 		}
 	},
 "skill" : {
