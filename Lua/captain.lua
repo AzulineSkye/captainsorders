@@ -28,6 +28,7 @@ local sprite_resupply = Resources.sprite_load(NAMESPACE, "captainBeaconResupply"
 local sprite_hacking = Resources.sprite_load(NAMESPACE, "captainBeaconHacking", path.combine(PATH, "Sprites/beaconHacking.png"), 11, 20, 51)
 local sprite_impact = Resources.sprite_load(NAMESPACE, "captainBeaconImpact", path.combine(PATH, "Sprites/beaconimpact.png"), 5, 117, 203)
 local sprite_bar = Resources.sprite_load(NAMESPACE, "captainBeaconHackingBar", path.combine(PATH, "Sprites/beaconHackingBar.png"), 1, 23, 5)
+local sprite_log = Resources.sprite_load(NAMESPACE, "captainLog", path.combine(PATH, "Sprites/captainLog.png"), 1, 180, 180)
 
 local cap = Survivor.new(NAMESPACE, "captain")
 local cap_id = cap.value
@@ -1379,3 +1380,7 @@ gm.pre_script_hook(gm.constants.actor_skin_skinnable_set_skin, function(self, ot
 		return false
 	end
 end)
+
+local cap_log = Survivor_Log.new(cap, sprite_log, sprite_walk)
+cap_log.stat_regen_base = 0.60
+cap_log.stat_regen_level = 0.12
