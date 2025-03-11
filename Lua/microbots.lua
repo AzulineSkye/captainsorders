@@ -1,4 +1,4 @@
-local sprite_bots = Resources.sprite_load(NAMESPACE, "defensiveMicrobots", path.combine(PATH, "Sprites/microbots.png"), 1, 16, 18)
+local sprite_bots = Resources.sprite_load(NAMESPACE, "defensiveMicrobots", path.combine(PATH, "Sprites/microbots.png"), 1, 16, 16)
 local sprite_bot = Resources.sprite_load(NAMESPACE, "defensiveMicrobotObject", path.combine(PATH, "Sprites/microbot.png"), 1, 3, 3)
 
 local bots = Item.new(NAMESPACE, "defensiveMicrobots")
@@ -69,7 +69,7 @@ bots:onPreStep(function(actor, stack)
 		drones = 0
 	end
 	
-    if actor.microbotscharge < math.min(30, 60 / (2 * (1 + 0.25 * drones))) then
+    if actor.microbotscharge < math.min(60, 60 / (1 + 0.25 * drones)) then
         actor.microbotscharge = actor.microbotscharge + 1
     else
 		local bullets = Instance.find_all(Instance.projectiles)

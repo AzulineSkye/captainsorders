@@ -2,16 +2,16 @@ local sprite_loadout = Resources.sprite_load(NAMESPACE, "captainSelect", path.co
 local sprite_portrait = Resources.sprite_load(NAMESPACE, "captainPortrait", path.combine(PATH, "Sprites/portrait.png"), 2)
 local sprite_portrait_small	= Resources.sprite_load(NAMESPACE, "captainPortraitSmall", path.combine(PATH, "Sprites/portraitSmall.png"))
 local sprite_skills = Resources.sprite_load(NAMESPACE, "captainSkills", path.combine(PATH, "Sprites/skills.png"), 13)
-local sprite_idle = Resources.sprite_load(NAMESPACE, "captainIdle", path.combine(PATH, "Sprites/idle.png"), 1, 11, 18)
-local sprite_idle_half = Resources.sprite_load(NAMESPACE, "captainIdleHalf", path.combine(PATH, "Sprites/idleHalf.png"), 1, 11, 20)
+local sprite_idle = Resources.sprite_load(NAMESPACE, "captainIdle", path.combine(PATH, "Sprites/idle.png"), 1, 12, 18)
+local sprite_idle_half = Resources.sprite_load(NAMESPACE, "captainIdleHalf", path.combine(PATH, "Sprites/idleHalf.png"), 1, 12, 20)
 local sprite_walk = Resources.sprite_load(NAMESPACE, "captainWalk", path.combine(PATH, "Sprites/walk.png"), 8, 12, 18)
 local sprite_walk_half = Resources.sprite_load(NAMESPACE, "captainWalkHalf", path.combine(PATH, "Sprites/walkHalf.png"), 8, 14, 20)
 local sprite_walk_back = Resources.sprite_load(NAMESPACE, "captainWalkBack", path.combine(PATH, "Sprites/walkBack.png"), 8, 12, 18)
-local sprite_jump = Resources.sprite_load(NAMESPACE, "captainJump", path.combine(PATH, "Sprites/jump.png"), 1, 11, 20)
+local sprite_jump = Resources.sprite_load(NAMESPACE, "captainJump", path.combine(PATH, "Sprites/jump.png"), 1, 12, 20)
 local sprite_jump_half = Resources.sprite_load(NAMESPACE, "captainJumpHalf", path.combine(PATH, "Sprites/jumpHalf.png"), 1, 12, 20)
-local sprite_jump_peak = Resources.sprite_load(NAMESPACE, "captainJumpPeak", path.combine(PATH, "Sprites/jumpPeak.png"), 1, 11, 20)
+local sprite_jump_peak = Resources.sprite_load(NAMESPACE, "captainJumpPeak", path.combine(PATH, "Sprites/jumpPeak.png"), 1, 12, 20)
 local sprite_jump_peak_half	= Resources.sprite_load(NAMESPACE, "captainJumpPeakHalf", path.combine(PATH, "Sprites/jumpPeakHalf.png"), 1, 12, 20)
-local sprite_fall = Resources.sprite_load(NAMESPACE, "captainFall", path.combine(PATH, "Sprites/fall.png"), 1, 11, 20)
+local sprite_fall = Resources.sprite_load(NAMESPACE, "captainFall", path.combine(PATH, "Sprites/fall.png"), 1, 12, 20)
 local sprite_fall_half = Resources.sprite_load(NAMESPACE, "captainFallHalf", path.combine(PATH, "Sprites/fallHalf.png"), 1, 12, 20)
 local sprite_climb = Resources.sprite_load(NAMESPACE, "captainClimb", path.combine(PATH, "Sprites/climb.png"), 2, 6, 12)
 local sprite_death = Resources.sprite_load(NAMESPACE, "captainDeath", path.combine(PATH, "Sprites/death.png"), 8, 14, 28)
@@ -237,7 +237,7 @@ shock:onPostDraw(function(actor, stack)
 end)
 
 shock:onDamagedProc(function(actor, attacker, stack, hit_info)
-	if hit_info.damage >= actor.captainshockthreshold then
+	if hit_info.proc == true and hit_info.attack_info.captaininflictshock == nil then
 		actor:buff_remove(shock)
 	end
 end)
@@ -356,7 +356,7 @@ cap.all_skill_families:push(misc2)
 local vulcan = cap:get_primary()
 vulcan:set_skill_icon(sprite_skills, 0)
 vulcan.cooldown = 60
-vulcan.damage = 0.7
+vulcan.damage = 0.6
 vulcan.required_interrupt_priority = State.ACTOR_STATE_INTERRUPT_PRIORITY.any
 vulcan.require_key_press = true
 vulcan.allow_buffered_input = true
@@ -378,16 +378,17 @@ efPreview1:onDraw(function(self)
 		local xx = math.sin(angle) * range
 		local yy = math.cos(angle) * range
 		
+		gm.draw_set_colour(Color.from_hsv(0, 0, 100))
+		gm.draw_set_alpha(actor.alpha_preview)
 		actor:collision_line_advanced(actor.x + 24 * actor.image_xscale, actor.y - 9, actor.x + xx * actor.image_xscale, actor.y - 9 + yy, gm.constants.pBlock, true, true)
 		local collision_x1 = gm.variable_global_get("collision_x")
 		local collision_y1 = gm.variable_global_get("collision_y")
-		gm.draw_set_colour(Color.from_hsv(0, 0, 100))
 		gm.draw_line_width(actor.x + 24 * actor.image_xscale, actor.y - 9, collision_x1, collision_y1, 1)
 		actor:collision_line_advanced(actor.x + 24 * actor.image_xscale, actor.y - 9, actor.x + xx * actor.image_xscale, actor.y - 9 - yy, gm.constants.pBlock, true, true)
 		local collision_x2 = gm.variable_global_get("collision_x")
 		local collision_y2 = gm.variable_global_get("collision_y")
-		gm.draw_set_colour(Color.from_hsv(0, 0, 100))
 		gm.draw_line_width(actor.x + 24 * actor.image_xscale, actor.y - 9, collision_x2, collision_y2, 1)
+		gm.draw_set_alpha(1)
 	else
 		self:destroy()
 	end
@@ -409,6 +410,7 @@ stvulcan:onEnter(function(actor, data)
 	actor.charging_shotgun = 1
 	actor.spread_preview = math.max(0, math.floor(data.chargetimer / 4))
 	actor.range_preview = 1000 - 500 * (data.chargetimer / 72)
+	actor.alpha_preview = math.min(1, 2 * (1 - (data.chargetimer / 72)))
 	local preview = efPreview1:create(actor.x, actor.y)
 	preview.parent = actor
 end)
@@ -424,6 +426,7 @@ stvulcan:onStep(function(actor, data)
 		actor.charging_shotgun = 1
 		actor.spread_preview = math.max(0, math.floor(data.chargetimer / 4))
 		actor.range_preview = 1000 - 666 * (data.chargetimer / 72)
+		actor.alpha_preview = math.min(1, 2 * (1 - (data.chargetimer / 72)))
 	
 		if data.shotgun_charging_sound == -1 then
 			data.shotgun_charging_sound = gm.sound_play_at(gm.constants.wLoader_BulletPunch_ChargeLoop, 1, 1.5, actor.x, actor.y)
@@ -618,7 +621,7 @@ end)
 Callback.add(Callback.TYPE.onAttackHit, "captainInflictShock", function(hit_info)
 	if hit_info.attack_info.captaininflictshock == 1 then
 		victim = hit_info.target
-		if victim.team ~= hit_info.inflictor and victim.activity_type ~= 90 and victim.__activity_handler_state ~= 90 and not GM.actor_is_boss(victim) and victim.object_index ~= gm.constants.oWormBody and victim.object_index ~= gm.constants.oWurmBody and victim.object_index ~= gm.constants.oBrambleBody then
+		if victim.team ~= hit_info.inflictor and victim.activity_type ~= 90 and not (victim.activity == 92 and victim.object_index == gm.constants.oTuber) and victim.__activity_handler_state ~= 90 and not GM.actor_is_boss(victim) and victim.object_index ~= gm.constants.oWormBody and victim.object_index ~= gm.constants.oWurmBody and victim.object_index ~= gm.constants.oBrambleBody then
 			GM.apply_buff(victim, shock, 5 * 60, 1)
 			GM.set_buff_time(victim, shock, 5 * 60)
 		end
@@ -1193,7 +1196,7 @@ objShocking:onDraw(function(self)
 		local shocklist = List.new()
 		self:collision_ellipse_list(self.x - 135, self.y - 135, self.x + 135, self.y + 135, gm.constants.pActorCollisionBase, false, true, shocklist, false)
 		for _, actor in ipairs(shocklist) do
-			if actor.team ~= self.parent.team and actor.activity_type ~= 90 and actor.__activity_handler_state ~= 90 and not GM.actor_is_boss(actor) and actor.object_index ~= gm.constants.oWormBody and actor.object_index ~= gm.constants.oWurmBody and actor.object_index ~= gm.constants.oBrambleBody and actor:buff_stack_count(shock) > 0 then
+			if actor.team ~= self.parent.team and actor.activity_type ~= 90 and not (actor.activity == 92 and actor.object_index == gm.constants.oTuber) and actor.__activity_handler_state ~= 90 and not GM.actor_is_boss(actor) and actor.object_index ~= gm.constants.oWormBody and actor.object_index ~= gm.constants.oWurmBody and actor.object_index ~= gm.constants.oBrambleBody and actor:buff_stack_count(shock) > 0 then
 				gm.draw_set_colour(Color.from_rgb(150, 245, 239))
 				gm.draw_set_alpha(0.75)
 				gm.draw_lightning(self.x, self.y, actor.x, actor.y, Color.from_rgb(150, 245, 239))

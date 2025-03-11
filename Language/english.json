@@ -5,7 +5,7 @@
 		"nameUpper" : "CAPTAIN",
 		"description": "The <y>Captain</c> is a unique survivor that can provide utility and support on the battlefield with his <y>Orbital Supply Beacons</c> and <y>Defensive Microbots</c>. Combining a <y>Power Tazer</c> with <y>Orbital Probe</c> strikes will devastate most crowds with ease, while shots from your trusty <y>Vulcan Shotgun</c> can help with clearing up whatever remains.",
 		"endQuote": "..and so he left, with a new tale to tell.",
-		"story": "<ul>Passenger Details:</c>\n<g>[Employee Class]</c>\n\n<ul>Employee Details:</c>\nI'm excited to announce that the UES has chosen one of its finest captains for this shipping expedition. They have successfully overseen dozens of similiar missions ever since entering retirement from the military back in 2037, and I don't expect this one to be any different. Treat them with utmost care and respect.\n\n<b>[SECURITY RECALL]</c>\n<ul>[Event C1]</c> Employee requested a contracted commando to deliver a parcel into their quarters. Request granted.\n<ul>[Event C2]</c> Employee observed inspecting their parcel. Its contents seem to be multiple unidentified metal spheres. Whirring and chirping could be heard during the inspection.\n<ul>[Event C3]</c> <r>[OVERRIDE]</c> ATTENTION! THIS IS THE CAPTAIN SPEAKING. AN EMERGENCY HAS OCCURED, COLLISION IS IMMINENT. HEAD FOR THE DROP PODS! I REPEAT, HEAD FOR THE DROP PODS! THAT IS AN ORDER!",
+		"story": "<ul>Passenger Details:</c>\n<g>[Employee Class]</c>\n\n<ul>Employee Details:</c>\nI'm excited to announce that the UES has chosen one of its finest captains for this shipping expedition. They have successfully overseen dozens of similiar missions ever since entering retirement from the military back in 2037, and I don't expect this one to be any different. Treat them with utmost care and respect.\n\n<b>[SECURITY RECALL]</c>\n<ul>[Event C1]</c> Employee requested a contracted commando to deliver a parcel into their quarters. Request granted.\n<ul>[Event C2]</c> Employee observed inspecting their parcel. Its contents seem to be multiple unidentified metal spheres. Whirring and chirping could be heard during the inspection.\n<ul>[Event C3]</c> <r>[OVERRIDE]</c> ATTENTION! THIS IS THE CAPTAIN SPEAKING. AN EMERGENCY HAS OCCURED AND COLLISION IS IMMINENT!. HEAD FOR THE DROP PODS! I REPEAT, HEAD FOR THE DROP PODS! THAT IS AN ORDER!",
 		"arrival": "<y>Destination:</c>\nUES Shipping Dock 0,\nRedview,\nMars",
 		"departure": "<y>Departure:</c>\nUES Shipping Dock 5,\nRedview,\nMars",
 		"id": "Travel ID: 13138303C4145425359425544414F4C4C4C414D435",
@@ -14,7 +14,7 @@
 "skill" : {
 	"captainZ": {
 			"name": "Vulcan Shotgun",
-			"description": "Fire a blast of pellets for <y>8x70% damage</c>. Charging the attack narrows the <b>spread</c> and increases <b>range</c>."
+			"description": "Fire a blast of pellets for <y>8x60% damage</c>. Charging the attack narrows the <b>spread</c> and increases <b>range</c>."
 		},
 	"captainX": {
 			"name": "Power Tazer",
@@ -81,11 +81,11 @@
 	"defensiveMicrobots" : {
 		"name" : "Defensive Microbots",
 		"pickup": "Shoot down nearby projectiles. Recharge rate scales with the amount of drones you have.",
-		"description": "Shoot down projectiles within <y>20m</c> <c_stack>(+10m per stack)</c> every <y>0.5 seconds</c>. <b>Recharge rate scales with the amount of drones you have</c>.",
-		"destination": "<r>TOP SECRET</c>",
+		"description": "Shoot down projectiles within <y>20m</c> <c_stack>(+10m per stack)</c> every <y>1 second</c>. <b>Recharge rate scales with the amount of drones you have</c>.",
+		"destination": "UES Shipping Dock 5,\nRedview,\nMars",
 		"date": "08/11/2056",
-		"story": "'Captain, look out!' \n\nA voice cried from the old man's periphery. But he knew he was in no danger – with a chirp, his companion microbots activated and fired, disintegrating the fireball. Just as it did every time. \n\nQuickly spinning on his heel, the old man fired his shotgun, decapitating the Lemurian with a swift and pronounced BOOM. \n\n'I'd worry more about your own safety than mine, private.'",
-		"priority": "<r>High Priority</c>"
+		"story": "Be careful with these - they're fragile and potentially highly explosive if not handled correctly.\n\nI'm not sure how a prototype of a highly advanced defensive system made specifically for combat scenarios would be useful on a shipping expedition, but I'm here to make sure this gets delivered to the right person, not to ask pointless questions.\n\nI'm expecting adequate payment within the next 3 days. I didn't put my job on the line for nothing.",
+		"priority": "<r>High Priority/Fragile</c>"
 		}
 	},
 }
