@@ -91,6 +91,7 @@ cap:onInit(function(actor)
 	actor:survivor_util_init_half_sprites()
 	
 	actor.charging_shotgun = 0
+	actor.proberetaindirection = 0
 	actor.callingprobe = 0
 	actor.probeallowcancel = 0
 	actor.beaconallowcancel = 0
@@ -646,8 +647,6 @@ priProbe.require_key_press = true
 priProbe.is_primary = false
 priProbe.is_utility = false
 priProbe.does_change_activity_state = false
-priProbe.hold_facing_direction = true
-priProbe.override_strafe_direction = false
 priProbe.auto_restock = false
 priProbe.start_with_stock = 3
 priProbe.max_stock = 3
@@ -679,7 +678,8 @@ probe.is_primary = false
 probe.is_utility = true
 probe.does_change_activity_state = true
 probe.hold_facing_direction = true
-probe.override_strafe_direction = false
+probe.override_strafe_direction = true
+probe.ignore_aim_direction = true
 probe.required_interrupt_priority = State.ACTOR_STATE_INTERRUPT_PRIORITY.any
 probe.require_key_press = true
 probe:clear_callbacks()
@@ -773,6 +773,13 @@ end)
 stprobe:onEnter(function(actor, data)
 	actor:skill_util_strafe_init()
 	actor:skill_util_strafe_turn_init()
+	
+	if gm.sign(gm.real(actor.moveRight) - gm.real(actor.moveLeft)) ~= 0 then
+		actor.hold_facing_direction_xscale = gm.sign(gm.real(actor.moveRight) - gm.real(actor.moveLeft)) -- stupid dumb idiotic bullshit fuckery, apparently vanilla code also uses that lmao
+	else
+		actor.hold_facing_direction_xscale = actor.image_xscale
+	end
+	
 	actor.sprite_index2 = sprite_call
 	actor.image_index2 = 0
 	data.timer = 0
@@ -919,6 +926,8 @@ beacon.is_primary = true
 beacon.is_utility = false
 beacon.damage = 10
 beacon.hold_facing_direction = true
+beacon.override_strafe_direction = true
+beacon.ignore_aim_direction = true
 beacon.required_interrupt_priority = State.ACTOR_STATE_INTERRUPT_PRIORITY.any
 beacon.require_key_press = true
 beacon.allow_buffered_input = true
@@ -958,6 +967,12 @@ stbeacon:onEnter(function(actor, data)
 	local loadout = Instance.find(gm.constants.oInit).player:get(actor.player_id).loadout_selection
 	local beacon1 = loadout.get_family_choice_index(loadout, loadout, "captainBeaconMisc1")
 	local beacon2 = loadout.get_family_choice_index(loadout, loadout, "captainBeaconMisc2")
+	
+	if gm.sign(gm.real(actor.moveRight) - gm.real(actor.moveLeft)) ~= 0 then
+		actor.hold_facing_direction_xscale = gm.sign(gm.real(actor.moveRight) - gm.real(actor.moveLeft)) -- stupid dumb idiotic bullshit fuckery, apparently vanilla code also uses that lmao
+	else
+		actor.hold_facing_direction_xscale = actor.image_xscale
+	end
 	
 	actor:skill_util_strafe_init()
 	actor:skill_util_strafe_turn_init()
