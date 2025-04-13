@@ -359,7 +359,10 @@ local vulcan = cap:get_primary()
 vulcan:set_skill_icon(sprite_skills, 0)
 vulcan.cooldown = 60
 vulcan.damage = 0.6
+vulcan.is_primary = true
+vulcan.is_utility = false
 vulcan.required_interrupt_priority = State.ACTOR_STATE_INTERRUPT_PRIORITY.any
+vulcan.hold_facing_direction = true
 vulcan.require_key_press = true
 vulcan.allow_buffered_input = true
 vulcan:clear_callbacks()
@@ -532,7 +535,12 @@ local tazer = cap:get_secondary()
 tazer:set_skill_icon(sprite_skills, 1)
 tazer.cooldown = 6 * 60
 tazer.damage = 0.6
+tazer.is_primary = false
+tazer.is_utility = false
+tazer.hold_facing_direction = true
 tazer.require_key_press = true
+tazer.allow_buffered_input = true
+tazer.does_change_activity_state = true
 tazer:clear_callbacks()
 
 local sttazer = State.new(NAMESPACE, "powerTazer")
@@ -635,6 +643,11 @@ end)
 local priProbe = Skill.new(NAMESPACE, "captainC_1")
 priProbe:set_skill_icon(sprite_skills, 4)
 priProbe.require_key_press = true
+priProbe.is_primary = false
+priProbe.is_utility = false
+priProbe.does_change_activity_state = false
+priProbe.hold_facing_direction = true
+priProbe.override_strafe_direction = false
 priProbe.auto_restock = false
 priProbe.start_with_stock = 3
 priProbe.max_stock = 3
@@ -662,7 +675,11 @@ local probe = cap:get_utility()
 probe:set_skill_icon(sprite_skills, 3)
 probe.cooldown = 11 * 60
 probe.damage = 5.0
+probe.is_primary = false
 probe.is_utility = true
+probe.does_change_activity_state = true
+probe.hold_facing_direction = true
+probe.override_strafe_direction = false
 probe.required_interrupt_priority = State.ACTOR_STATE_INTERRUPT_PRIORITY.any
 probe.require_key_press = true
 probe:clear_callbacks()
@@ -814,6 +831,7 @@ stprobe:onStep(function(actor, data)
 end)
 
 stprobe:onExit(function(actor, data)
+	actor:skill_util_strafe_exit()
 	actor.probeallowcancel = 0
 	actor.callcooldown = 10
 	actor:remove_skill_override(Skill.SLOT.primary, priProbe, 10)
@@ -898,9 +916,12 @@ local beacon = cap:get_special()
 beacon:set_skill_icon(sprite_skills, 6)
 beacon.cooldown = 10
 beacon.is_primary = true
+beacon.is_utility = false
 beacon.damage = 10
+beacon.hold_facing_direction = true
 beacon.required_interrupt_priority = State.ACTOR_STATE_INTERRUPT_PRIORITY.any
 beacon.require_key_press = true
+beacon.allow_buffered_input = true
 beacon:clear_callbacks()
 
 local stbeacon = State.new(NAMESPACE, "orbitalSupplyBeacon")
@@ -1026,6 +1047,7 @@ stbeacon:onStep(function(actor, data)
 end)
 
 stbeacon:onExit(function(actor, data)
+	actor:skill_util_strafe_exit()
 	captain_remove_beacon_overrides(actor)
 	actor.callcooldown = 10
 	actor.closebeaconmenu = 1
@@ -1351,7 +1373,7 @@ end)
 
 Callback.add(Callback.TYPE.onStageStart, "captainRefreshBeacons", function()
 	for _, actor in ipairs(Instance.find_all(gm.constants.oP)) do
-		if actor.name == "Captain" then
+		if actor.class == cap_id then
 			if actor.beacon1charges ~= nil then
 				actor.beacon1charges = 1 + math.floor(actor:item_stack_count(Item.find("ror", "ancientScepter")) / 2) + (actor:item_stack_count(Item.find("ror", "ancientScepter")) % 2)
 			end
@@ -1367,7 +1389,7 @@ end)
 
 Callback.add(Callback.TYPE.onPickupCollected, "captainScepterPickup", function(pickup, actor)
 	for _, actor in ipairs(Instance.find_all(gm.constants.oP)) do
-		if actor.name == "Captain" then
+		if actor.class == cap_id then
 			if pickup.item_id == 77 then
 				if actor.beacon1charges ~= nil and actor.beacon2charges ~= nil and unavailable ~= nil then
 					actor:remove_skill_override(Skill.SLOT.special, unavailable, 30)
