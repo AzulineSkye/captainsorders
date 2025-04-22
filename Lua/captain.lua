@@ -5,7 +5,7 @@ local sprite_skills = Resources.sprite_load(NAMESPACE, "captainSkills", path.com
 local sprite_idle = Resources.sprite_load(NAMESPACE, "captainIdle", path.combine(PATH, "Sprites/idle.png"), 1, 11, 18)
 local sprite_idle_half = Resources.sprite_load(NAMESPACE, "captainIdleHalf", path.combine(PATH, "Sprites/idleHalf.png"), 1, 8, 3)
 local sprite_walk = Resources.sprite_load(NAMESPACE, "captainWalk", path.combine(PATH, "Sprites/walk.png"), 8, 12, 18)
-local sprite_walk_half = Resources.sprite_load(NAMESPACE, "captainWalkHalf", path.combine(PATH, "Sprites/walkHalf.png"), 8, 9, 3)
+local sprite_walk_half = Resources.sprite_load(NAMESPACE, "captainWalkHalf", path.combine(PATH, "Sprites/walkHalf.png"), 8, 10, 3)
 local sprite_walk_back = Resources.sprite_load(NAMESPACE, "captainWalkBack", path.combine(PATH, "Sprites/walkBack.png"), 8, 12, 18)
 local sprite_jump = Resources.sprite_load(NAMESPACE, "captainJump", path.combine(PATH, "Sprites/jump.png"), 1, 10, 20)
 local sprite_jump_half = Resources.sprite_load(NAMESPACE, "captainJumpHalf", path.combine(PATH, "Sprites/jumpHalf.png"), 1, 7, 3)
@@ -19,7 +19,7 @@ local sprite_decoy = Resources.sprite_load(NAMESPACE, "captainDecoy", path.combi
 local sprite_shoot1 = Resources.sprite_load(NAMESPACE, "captainShoot1", path.combine(PATH, "Sprites/shoot1.png"), 20, 14, 20)
 local sprite_shoot1_half = Resources.sprite_load(NAMESPACE, "captainShoot1Half", path.combine(PATH, "Sprites/shoot1Half.png"), 20, 14, 20)
 local sprite_shoot2 = Resources.sprite_load(NAMESPACE, "captainShoot2", path.combine(PATH, "Sprites/shoot2.png"), 6, 14, 20)
-local sprite_shoot3 = Resources.sprite_load(NAMESPACE, "captainShoot3", path.combine(PATH, "Sprites/shoot3.png"), 3, 14, 20)
+local sprite_shoot3 = Resources.sprite_load(NAMESPACE, "captainShoot3", path.combine(PATH, "Sprites/shoot3.png"), 4, 14, 20)
 local sprite_call = Resources.sprite_load(NAMESPACE, "captainCall", path.combine(PATH, "Sprites/call.png"), 5, 12, 19)
 local sprite_shoot4	= Resources.sprite_load(NAMESPACE, "captainShoot4", path.combine(PATH, "Sprites/shoot4.png"), 8, 14, 20)
 local sprite_healing = Resources.sprite_load(NAMESPACE, "captainBeaconHealing", path.combine(PATH, "Sprites/beaconHealing.png"), 11, 20, 51)
@@ -825,7 +825,7 @@ stprobe:onStep(function(actor, data)
 	end
 	
 	if actor.callingprobe == 1 then
-		if actor.sprite_index2 == sprite_shoot3 and actor.image_index2 >= 3 then
+		if actor.sprite_index2 == sprite_shoot3 and actor.image_index2 >= 4 then
 			actor.sprite_index2 = sprite_call
 			actor.callingprobe = 0
 			actor.image_index2 = 0
