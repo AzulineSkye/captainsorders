@@ -5,7 +5,7 @@ local sprite_skills = Resources.sprite_load(NAMESPACE, "captainSkills", path.com
 local sprite_idle = Resources.sprite_load(NAMESPACE, "captainIdle", path.combine(PATH, "Sprites/idle.png"), 1, 11, 18)
 local sprite_idle_half = Resources.sprite_load(NAMESPACE, "captainIdleHalf", path.combine(PATH, "Sprites/idleHalf.png"), 1, 8, 3)
 local sprite_walk = Resources.sprite_load(NAMESPACE, "captainWalk", path.combine(PATH, "Sprites/walk.png"), 8, 12, 18)
-local sprite_walk_half = Resources.sprite_load(NAMESPACE, "captainWalkHalf", path.combine(PATH, "Sprites/walkHalf.png"), 8, 10, 3)
+local sprite_walk_half = Resources.sprite_load(NAMESPACE, "captainWalkHalf", path.combine(PATH, "Sprites/walkHalf.png"), 8, 9, 3)
 local sprite_walk_back = Resources.sprite_load(NAMESPACE, "captainWalkBack", path.combine(PATH, "Sprites/walkBack.png"), 8, 12, 18)
 local sprite_jump = Resources.sprite_load(NAMESPACE, "captainJump", path.combine(PATH, "Sprites/jump.png"), 1, 10, 20)
 local sprite_jump_half = Resources.sprite_load(NAMESPACE, "captainJumpHalf", path.combine(PATH, "Sprites/jumpHalf.png"), 1, 7, 3)
@@ -15,17 +15,17 @@ local sprite_fall = Resources.sprite_load(NAMESPACE, "captainFall", path.combine
 local sprite_fall_half = Resources.sprite_load(NAMESPACE, "captainFallHalf", path.combine(PATH, "Sprites/fallHalf.png"), 1, 11, 3)
 local sprite_climb = Resources.sprite_load(NAMESPACE, "captainClimb", path.combine(PATH, "Sprites/climb.png"), 2, 6, 12)
 local sprite_death = Resources.sprite_load(NAMESPACE, "captainDeath", path.combine(PATH, "Sprites/death.png"), 8, 14, 28)
-local sprite_decoy = Resources.sprite_load(NAMESPACE, "captainDecoy", path.combine(PATH, "Sprites/decoy.png"), 1, 18, 24)
-local sprite_shoot1 = Resources.sprite_load(NAMESPACE, "captainShoot1", path.combine(PATH, "Sprites/shoot1.png"), 20, 14, 20)
-local sprite_shoot1_half = Resources.sprite_load(NAMESPACE, "captainShoot1Half", path.combine(PATH, "Sprites/shoot1Half.png"), 20, 14, 20)
+local sprite_decoy = Resources.sprite_load(NAMESPACE, "captainDecoy", path.combine(PATH, "Sprites/decoy.png"), 1, 14, 20)
+local sprite_shoot1 = Resources.sprite_load(NAMESPACE, "captainShoot1", path.combine(PATH, "Sprites/shoot1.png"), 24, 16, 36)
+local sprite_shoot1_half = Resources.sprite_load(NAMESPACE, "captainShoot1Half", path.combine(PATH, "Sprites/shoot1Half.png"), 24, 16, 36)
 local sprite_shoot2 = Resources.sprite_load(NAMESPACE, "captainShoot2", path.combine(PATH, "Sprites/shoot2.png"), 6, 14, 20)
 local sprite_shoot3 = Resources.sprite_load(NAMESPACE, "captainShoot3", path.combine(PATH, "Sprites/shoot3.png"), 4, 14, 20)
 local sprite_call = Resources.sprite_load(NAMESPACE, "captainCall", path.combine(PATH, "Sprites/call.png"), 5, 12, 19)
 local sprite_shoot4	= Resources.sprite_load(NAMESPACE, "captainShoot4", path.combine(PATH, "Sprites/shoot4.png"), 8, 14, 20)
-local sprite_healing = Resources.sprite_load(NAMESPACE, "captainBeaconHealing", path.combine(PATH, "Sprites/beaconHealing.png"), 11, 20, 51)
-local sprite_shocking = Resources.sprite_load(NAMESPACE, "captainBeaconShocking", path.combine(PATH, "Sprites/beaconShocking.png"), 11, 20, 51)
-local sprite_resupply = Resources.sprite_load(NAMESPACE, "captainBeaconResupply", path.combine(PATH, "Sprites/beaconResupply.png"), 11, 20, 51)
-local sprite_hacking = Resources.sprite_load(NAMESPACE, "captainBeaconHacking", path.combine(PATH, "Sprites/beaconHacking.png"), 11, 20, 51)
+local sprite_healing = Resources.sprite_load(NAMESPACE, "captainBeaconHealing", path.combine(PATH, "Sprites/beaconHealing.png"), 22, 11, 44)
+local sprite_shocking = Resources.sprite_load(NAMESPACE, "captainBeaconShocking", path.combine(PATH, "Sprites/beaconShocking.png"), 22, 11, 44)
+local sprite_resupply = Resources.sprite_load(NAMESPACE, "captainBeaconResupply", path.combine(PATH, "Sprites/beaconResupply.png"), 22, 11, 44)
+local sprite_hacking = Resources.sprite_load(NAMESPACE, "captainBeaconHacking", path.combine(PATH, "Sprites/beaconHacking.png"), 22, 11, 44)
 local sprite_impact = Resources.sprite_load(NAMESPACE, "captainBeaconImpact", path.combine(PATH, "Sprites/beaconimpact.png"), 5, 117, 203)
 local sprite_bar = Resources.sprite_load(NAMESPACE, "captainBeaconHackingBar", path.combine(PATH, "Sprites/beaconHackingBar.png"), 1, 23, 5)
 local sprite_log = Resources.sprite_load(NAMESPACE, "captainLog", path.combine(PATH, "Sprites/captainLog.png"), 1, 180, 180)
@@ -451,8 +451,8 @@ stvulcan:onStep(function(actor, data)
 			end
 		end
 		
-		if actor.image_index2 >= 9 then
-			actor.image_index2 = 9
+		if actor.image_index2 >= 13 then
+			actor.image_index2 = 13
 		end
 		
 		local release = not actor:control("skill1", 0)
@@ -473,7 +473,7 @@ stvulcan:onStep(function(actor, data)
 				gm.audio_stop_sound(data.shotgun_charging_sound)
 			end
 			
-			actor.image_index2 = 10
+			actor.image_index2 = 14
 			actor.image_speed = data.vulcanspeed
 			actor:sound_play(gm.constants.wBullet2, 1, 0.6 + math.random() * 0.2)
 			data.fired = 1
@@ -508,11 +508,11 @@ stvulcan:onStep(function(actor, data)
 		actor.charging_shotgun = 0
 		actor:skill_util_strafe_update(0.20 * actor.attack_speed, 0.9)
 		
-		if actor.image_index2 >= 15 and data.reloaded == 0 then
+		if actor.image_index2 >= 19 and data.reloaded == 0 then
 			actor:sound_play(gm.constants.wSniperReload, 0.7, 1.5)
 			data.reloaded = 1
 		end 
-		if actor.image_index2 >= 20 then
+		if actor.image_index2 >= 24 then
 			actor:skill_util_reset_activity_state()
 		end
 	end
@@ -524,7 +524,7 @@ stvulcan:onExit(function(actor, data)
 end)
 
 stvulcan:onGetInterruptPriority(function(actor, data)
-	if actor.image_index2 >= 15 then
+	if actor.image_index2 >= 19 then
 		return State.ACTOR_STATE_INTERRUPT_PRIORITY.skill_interrupt_period
 	end
 end)
