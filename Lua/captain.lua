@@ -1,34 +1,40 @@
-local sprite_loadout = Resources.sprite_load(NAMESPACE, "captainSelect", path.combine(PATH, "Sprites/select.png"), 20, 28, 0)
-local sprite_portrait = Resources.sprite_load(NAMESPACE, "captainPortrait", path.combine(PATH, "Sprites/portrait.png"), 4)
-local sprite_portrait_small	= Resources.sprite_load(NAMESPACE, "captainPortraitSmall", path.combine(PATH, "Sprites/portraitSmall.png"))
-local sprite_skills = Resources.sprite_load(NAMESPACE, "captainSkills", path.combine(PATH, "Sprites/skills.png"), 13)
-local sprite_idle = Resources.sprite_load(NAMESPACE, "captainIdle", path.combine(PATH, "Sprites/idle.png"), 1, 11, 18)
-local sprite_idle_half = Resources.sprite_load(NAMESPACE, "captainIdleHalf", path.combine(PATH, "Sprites/idleHalf.png"), 1, 8, 3)
-local sprite_walk = Resources.sprite_load(NAMESPACE, "captainWalk", path.combine(PATH, "Sprites/walk.png"), 8, 12, 18, 0.8)
-local sprite_walk_half = Resources.sprite_load(NAMESPACE, "captainWalkHalf", path.combine(PATH, "Sprites/walkHalf.png"), 8, 9, 3, 0.7)
-local sprite_walk_back = Resources.sprite_load(NAMESPACE, "captainWalkBack", path.combine(PATH, "Sprites/walkBack.png"), 8, 12, 18, 0.8)
-local sprite_jump = Resources.sprite_load(NAMESPACE, "captainJump", path.combine(PATH, "Sprites/jump.png"), 1, 10, 20)
-local sprite_jump_half = Resources.sprite_load(NAMESPACE, "captainJumpHalf", path.combine(PATH, "Sprites/jumpHalf.png"), 1, 7, 3)
-local sprite_jump_peak = Resources.sprite_load(NAMESPACE, "captainJumpPeak", path.combine(PATH, "Sprites/jumpPeak.png"), 1, 12, 20)
-local sprite_jump_peak_half	= Resources.sprite_load(NAMESPACE, "captainJumpPeakHalf", path.combine(PATH, "Sprites/jumpPeakHalf.png"), 1, 9, 3)
-local sprite_fall = Resources.sprite_load(NAMESPACE, "captainFall", path.combine(PATH, "Sprites/fall.png"), 1, 12, 20)
-local sprite_fall_half = Resources.sprite_load(NAMESPACE, "captainFallHalf", path.combine(PATH, "Sprites/fallHalf.png"), 1, 11, 3)
-local sprite_climb = Resources.sprite_load(NAMESPACE, "captainClimb", path.combine(PATH, "Sprites/climb.png"), 2, 6, 12)
-local sprite_death = Resources.sprite_load(NAMESPACE, "captainDeath", path.combine(PATH, "Sprites/death.png"), 8, 14, 28)
-local sprite_decoy = Resources.sprite_load(NAMESPACE, "captainDecoy", path.combine(PATH, "Sprites/decoy.png"), 1, 14, 20)
-local sprite_shoot1 = Resources.sprite_load(NAMESPACE, "captainShoot1", path.combine(PATH, "Sprites/shoot1.png"), 24, 16, 36)
-local sprite_shoot1_half = Resources.sprite_load(NAMESPACE, "captainShoot1Half", path.combine(PATH, "Sprites/shoot1Half.png"), 24, 16, 36)
-local sprite_shoot2 = Resources.sprite_load(NAMESPACE, "captainShoot2", path.combine(PATH, "Sprites/shoot2.png"), 6, 14, 20)
-local sprite_shoot3 = Resources.sprite_load(NAMESPACE, "captainShoot3", path.combine(PATH, "Sprites/shoot3.png"), 4, 14, 20)
-local sprite_call = Resources.sprite_load(NAMESPACE, "captainCall", path.combine(PATH, "Sprites/call.png"), 5, 12, 19)
-local sprite_shoot4	= Resources.sprite_load(NAMESPACE, "captainShoot4", path.combine(PATH, "Sprites/shoot4.png"), 8, 14, 20)
-local sprite_healing = Resources.sprite_load(NAMESPACE, "captainBeaconHealing", path.combine(PATH, "Sprites/beaconHealing.png"), 22, 11, 44)
-local sprite_shocking = Resources.sprite_load(NAMESPACE, "captainBeaconShocking", path.combine(PATH, "Sprites/beaconShocking.png"), 22, 11, 44)
-local sprite_resupply = Resources.sprite_load(NAMESPACE, "captainBeaconResupply", path.combine(PATH, "Sprites/beaconResupply.png"), 22, 11, 44)
-local sprite_hacking = Resources.sprite_load(NAMESPACE, "captainBeaconHacking", path.combine(PATH, "Sprites/beaconHacking.png"), 22, 11, 44)
-local sprite_impact = Resources.sprite_load(NAMESPACE, "captainBeaconImpact", path.combine(PATH, "Sprites/beaconimpact.png"), 5, 117, 203)
-local sprite_bar = Resources.sprite_load(NAMESPACE, "captainBeaconHackingBar", path.combine(PATH, "Sprites/beaconHackingBar.png"), 1, 23, 5)
-local sprite_log = Resources.sprite_load(NAMESPACE, "captainLog", path.combine(PATH, "Sprites/captainLog.png"), 1, 180, 180)
+local sprite_loadout = 			Resources.sprite_load(NAMESPACE, "captainSelect", path.combine(PATH, "Sprites/select.png"), 20, 28, 0)
+local sprite_portrait = 		Resources.sprite_load(NAMESPACE, "captainPortrait", path.combine(PATH, "Sprites/portrait.png"), 4)
+local sprite_portrait_small	= 	Resources.sprite_load(NAMESPACE, "captainPortraitSmall", path.combine(PATH, "Sprites/portraitSmall.png"))
+local sprite_skills = 			Resources.sprite_load(NAMESPACE, "captainSkills", path.combine(PATH, "Sprites/skills.png"), 13)
+
+local sprite_idle = 			Resources.sprite_load(NAMESPACE, "captainIdle", path.combine(PATH, "Sprites/idle.png"), 1, 11, 18)
+local sprite_idle_half = 		Resources.sprite_load(NAMESPACE, "captainIdleHalf", path.combine(PATH, "Sprites/idleHalf.png"), 1, 8, 3)
+local sprite_walk = 			Resources.sprite_load(NAMESPACE, "captainWalk", path.combine(PATH, "Sprites/walk.png"), 8, 12, 18, 0.8)
+local sprite_walk_half = 		Resources.sprite_load(NAMESPACE, "captainWalkHalf", path.combine(PATH, "Sprites/walkHalf.png"), 8, 9, 3, 0.6)
+local sprite_walk_back = 		Resources.sprite_load(NAMESPACE, "captainWalkBack", path.combine(PATH, "Sprites/walkBack.png"), 8, 12, 18, 0.8)
+local sprite_jump = 			Resources.sprite_load(NAMESPACE, "captainJump", path.combine(PATH, "Sprites/jump.png"), 1, 10, 20)
+local sprite_jump_half = 		Resources.sprite_load(NAMESPACE, "captainJumpHalf", path.combine(PATH, "Sprites/jumpHalf.png"), 1, 7, 3)
+local sprite_jump_peak = 		Resources.sprite_load(NAMESPACE, "captainJumpPeak", path.combine(PATH, "Sprites/jumpPeak.png"), 1, 12, 20)
+local sprite_jump_peak_half	= 	Resources.sprite_load(NAMESPACE, "captainJumpPeakHalf", path.combine(PATH, "Sprites/jumpPeakHalf.png"), 1, 9, 3)
+local sprite_fall = 			Resources.sprite_load(NAMESPACE, "captainFall", path.combine(PATH, "Sprites/fall.png"), 1, 12, 20)
+local sprite_fall_half = 		Resources.sprite_load(NAMESPACE, "captainFallHalf", path.combine(PATH, "Sprites/fallHalf.png"), 1, 11, 3)
+local sprite_climb = 			Resources.sprite_load(NAMESPACE, "captainClimb", path.combine(PATH, "Sprites/climb.png"), 2, 6, 12)
+local sprite_death = 			Resources.sprite_load(NAMESPACE, "captainDeath", path.combine(PATH, "Sprites/death.png"), 8, 14, 28)
+local sprite_decoy = 			Resources.sprite_load(NAMESPACE, "captainDecoy", path.combine(PATH, "Sprites/decoy.png"), 1, 14, 20)
+
+local sprite_shoot1 = 			Resources.sprite_load(NAMESPACE, "captainShoot1", path.combine(PATH, "Sprites/shoot1.png"), 24, 16, 36)
+local sprite_shoot1_half = 		Resources.sprite_load(NAMESPACE, "captainShoot1Half", path.combine(PATH, "Sprites/shoot1Half.png"), 24, 16, 29)
+local sprite_shoot2 = 			Resources.sprite_load(NAMESPACE, "captainShoot2", path.combine(PATH, "Sprites/shoot2.png"), 9, 14, 26, 1.3)
+local sprite_shoot3 = 			Resources.sprite_load(NAMESPACE, "captainShoot3", path.combine(PATH, "Sprites/shoot3.png"), 4, 14, 20)
+local sprite_call = 			Resources.sprite_load(NAMESPACE, "captainCall", path.combine(PATH, "Sprites/call.png"), 5, 12, 19)
+local sprite_beaconCall = 			Resources.sprite_load(NAMESPACE, "captainBeaconCall", path.combine(PATH, "Sprites/beaconCall.png"), 5, 12, 22)
+local sprite_shoot4	= 			Resources.sprite_load(NAMESPACE, "captainShoot4", path.combine(PATH, "Sprites/shoot4.png"), 8, 14, 20)
+local sprite_healing = 			Resources.sprite_load(NAMESPACE, "captainBeaconHealing", path.combine(PATH, "Sprites/beaconHealing.png"), 22, 11, 44)
+local sprite_shocking = 		Resources.sprite_load(NAMESPACE, "captainBeaconShocking", path.combine(PATH, "Sprites/beaconShocking.png"), 22, 11, 44)
+local sprite_resupply = 		Resources.sprite_load(NAMESPACE, "captainBeaconResupply", path.combine(PATH, "Sprites/beaconResupply.png"), 22, 11, 44)
+local sprite_hacking = 			Resources.sprite_load(NAMESPACE, "captainBeaconHacking", path.combine(PATH, "Sprites/beaconHacking.png"), 22, 11, 44)
+local sprite_impact = 			Resources.sprite_load(NAMESPACE, "captainBeaconImpact", path.combine(PATH, "Sprites/beaconimpact.png"), 5, 117, 203)
+local sprite_bar = 				Resources.sprite_load(NAMESPACE, "captainBeaconHackingBar", path.combine(PATH, "Sprites/beaconHackingBar.png"), 1, 23, 5)
+local sprite_log = 				Resources.sprite_load(NAMESPACE, "captainLog", path.combine(PATH, "Sprites/captainLog.png"), 1, 180, 180)
+local sprite_credits = 			Resources.sprite_load(NAMESPACE, "captainCredits", path.combine(PATH, "Sprites/credits.png"), 1, 10, 10)
+
+local sprite_palette = Resources.sprite_load(NAMESPACE, "captainPallete", path.combine(PATH, "Sprites/pallete.png"))
 
 local cap = Survivor.new(NAMESPACE, "captain")
 local cap_id = cap.value
@@ -56,6 +62,14 @@ cap:set_animations({
 	decoy = sprite_decoy,
 })
 
+cap:set_palettes(sprite_palette, sprite_pallete, sprite_pallete)
+cap:add_skin("Militia", 1)
+cap:add_skin("Showman", 2)
+cap:add_skin("Admiral", 3)
+cap:add_skin("Malice", 4)
+cap:add_skin("Estranged", 5)
+
+
 cap:set_cape_offset(0, -8, 1, -2)
 cap:set_primary_color(Color.from_rgb(190, 186, 146))
 
@@ -63,6 +77,8 @@ cap.sprite_loadout = sprite_loadout
 cap.sprite_portrait = sprite_portrait
 cap.sprite_portrait_small = sprite_portrait_small
 cap.sprite_title = sprite_walk
+cap.sprite_idle = sprite_idle
+cap.sprite_credits = sprite_credits
 
 local cap_log = Survivor_Log.new(cap, sprite_log, sprite_walk)
 cap_log.stat_regen_base = 0.01
@@ -979,7 +995,7 @@ stbeacon:onEnter(function(actor, data)
 	
 	actor:skill_util_strafe_init()
 	actor:skill_util_strafe_turn_init()
-	actor.sprite_index2 = sprite_call
+	actor.sprite_index2 = sprite_beaconCall
 	actor.image_index2 = 0
 	data.call_sound = -1
 	data.beacon_removed = 0
@@ -1025,8 +1041,12 @@ stbeacon:onStep(function(actor, data)
 	
 	if actor.v_skill == false and actor.beaconallowcancel == 0 then
 		actor.beaconallowcancel = 1
-		actor.sprite_index2 = sprite_call
+		actor.sprite_index2 = sprite_beaconCall
 		actor.image_index2 = 0
+	end
+	
+	if actor.sprite_index2 == sprite_beaconCall and actor.image_index2 >=4 then
+		actor.image_index2 = 4
 	end
 	
 	if data.call_sound == -1 then

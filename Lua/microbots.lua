@@ -1,5 +1,5 @@
 local sprite_bots = Resources.sprite_load(NAMESPACE, "defensiveMicrobots", path.combine(PATH, "Sprites/microbots.png"), 1, 16, 16)
-local sprite_bot = Resources.sprite_load(NAMESPACE, "defensiveMicrobotObject", path.combine(PATH, "Sprites/microbot.png"), 1, 3, 3)
+local sprite_bot = Resources.sprite_load(NAMESPACE, "defensiveMicrobotObject", path.combine(PATH, "Sprites/microbot.png"), 16, 3, 3, 0.1)
 
 local bots = Item.new(NAMESPACE, "defensiveMicrobots")
 bots:set_sprite(sprite_bots)
