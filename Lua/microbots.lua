@@ -35,7 +35,8 @@ bot:onStep(function(self)
     data.angle = data.angle - speed
     self.x = data.parent.x + (gm.dcos(data.angle) * data.radius)
     self.y = data.parent.y - (gm.dsin(data.angle) * data.radius)
-	self.image_xscale = data.parent.image_xscale
+	-- self.image_xscale = data.parent.image_xscale
+	self.image_xscale = self.image_xscale
 end)
 
 bots:onAcquire(function(actor, stack)
