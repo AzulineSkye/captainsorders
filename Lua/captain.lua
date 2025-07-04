@@ -5,8 +5,8 @@ local sprite_skills = 			Resources.sprite_load(NAMESPACE, "captainSkills", path.
 
 local sprite_idle = 			Resources.sprite_load(NAMESPACE, "captainIdle", path.combine(PATH, "Sprites/idle.png"), 1, 11, 18)
 local sprite_idle_half = 		Resources.sprite_load(NAMESPACE, "captainIdleHalf", path.combine(PATH, "Sprites/idleHalf.png"), 1, 8, 3)
-local sprite_walk = 			Resources.sprite_load(NAMESPACE, "captainWalk", path.combine(PATH, "Sprites/walk.png"), 8, 12, 18, 0.75)
-local sprite_walk_half = 		Resources.sprite_load(NAMESPACE, "captainWalkHalf", path.combine(PATH, "Sprites/walkHalf.png"), 8, 9, 3, 0.55)
+local sprite_walk = 			Resources.sprite_load(NAMESPACE, "captainWalk", path.combine(PATH, "Sprites/walk.png"), 8, 11, 18, 0.75)
+local sprite_walk_half = 		Resources.sprite_load(NAMESPACE, "captainWalkHalf", path.combine(PATH, "Sprites/walkHalf.png"), 8, 9, 3, 0.45)
 local sprite_walk_back = 		Resources.sprite_load(NAMESPACE, "captainWalkBack", path.combine(PATH, "Sprites/walkBack.png"), 8, 12, 18, 0.75)
 local sprite_jump = 			Resources.sprite_load(NAMESPACE, "captainJump", path.combine(PATH, "Sprites/jump.png"), 1, 10, 20)
 local sprite_jump_half = 		Resources.sprite_load(NAMESPACE, "captainJumpHalf", path.combine(PATH, "Sprites/jumpHalf.png"), 1, 7, 3)
