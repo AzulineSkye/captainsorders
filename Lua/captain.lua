@@ -18,8 +18,8 @@ local sprite_climb = 			Resources.sprite_load(NAMESPACE, "captainClimb", path.co
 local sprite_death = 			Resources.sprite_load(NAMESPACE, "captainDeath", path.combine(PATH, "Sprites/death.png"), 8, 14, 28)
 local sprite_decoy = 			Resources.sprite_load(NAMESPACE, "captainDecoy", path.combine(PATH, "Sprites/decoy.png"), 1, 14, 20)
 
-local sprite_shoot1 = 			Resources.sprite_load(NAMESPACE, "captainShoot1", path.combine(PATH, "Sprites/shoot1.png"), 24, 16, 36)
-local sprite_shoot1_half = 		Resources.sprite_load(NAMESPACE, "captainShoot1Half", path.combine(PATH, "Sprites/shoot1Half.png"), 24, 16, 29)
+local sprite_shoot1 = 			Resources.sprite_load(NAMESPACE, "captainShoot1", path.combine(PATH, "Sprites/shoot1.png"), 25, 16, 34, 0.8)
+local sprite_shoot1_half = 		Resources.sprite_load(NAMESPACE, "captainShoot1Half", path.combine(PATH, "Sprites/shoot1Half.png"), 25, 16, 34, 0.8)
 local sprite_shoot2 = 			Resources.sprite_load(NAMESPACE, "captainShoot2", path.combine(PATH, "Sprites/shoot2.png"), 9, 14, 26, 1.3)
 local sprite_shoot3 = 			Resources.sprite_load(NAMESPACE, "captainShoot3", path.combine(PATH, "Sprites/shoot3.png"), 4, 14, 20)
 local sprite_call = 			Resources.sprite_load(NAMESPACE, "captainCall", path.combine(PATH, "Sprites/call.png"), 5, 12, 19)
@@ -68,6 +68,7 @@ cap:add_skin("Showman", 2)
 cap:add_skin("Admiral", 3)
 cap:add_skin("Malice", 4)
 cap:add_skin("Estranged", 5)
+cap:add_skin("Judgement", 6)
 
 
 cap:set_cape_offset(0, -8, 1, -2)
@@ -528,7 +529,7 @@ stvulcan:onStep(function(actor, data)
 			actor:sound_play(gm.constants.wSniperReload, 0.7, 1.5)
 			data.reloaded = 1
 		end 
-		if actor.image_index2 >= 24 then
+		if actor.image_index2 >= 25 then
 			actor:skill_util_reset_activity_state()
 		end
 	end
