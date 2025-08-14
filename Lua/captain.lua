@@ -1,12 +1,12 @@
 local sprite_loadout = 			Resources.sprite_load(NAMESPACE, "captainSelect", path.combine(PATH, "Sprites/select.png"), 20, 28, 0)
 local sprite_portrait = 		Resources.sprite_load(NAMESPACE, "captainPortrait", path.combine(PATH, "Sprites/portrait.png"), 4)
 local sprite_portrait_small	= 	Resources.sprite_load(NAMESPACE, "captainPortraitSmall", path.combine(PATH, "Sprites/portraitSmall.png"))
-local sprite_skills = 			Resources.sprite_load(NAMESPACE, "captainSkills", path.combine(PATH, "Sprites/skills.png"), 13)
+local sprite_skills = 			Resources.sprite_load(NAMESPACE, "captainSkills", path.combine(PATH, "Sprites/skills.png"), 14)
 
 local sprite_idle = 			Resources.sprite_load(NAMESPACE, "captainIdle", path.combine(PATH, "Sprites/idle.png"), 1, 11, 18)
 local sprite_idle_half = 		Resources.sprite_load(NAMESPACE, "captainIdleHalf", path.combine(PATH, "Sprites/idleHalf.png"), 1, 8, 3)
 local sprite_walk = 			Resources.sprite_load(NAMESPACE, "captainWalk", path.combine(PATH, "Sprites/walk.png"), 8, 11, 18, 0.75)
-local sprite_walk_half = 		Resources.sprite_load(NAMESPACE, "captainWalkHalf", path.combine(PATH, "Sprites/walkHalf.png"), 8, 9, 3, 0.45)
+local sprite_walk_half = 		Resources.sprite_load(NAMESPACE, "captainWalkHalf", path.combine(PATH, "Sprites/walkHalf.png"), 8, 9, 4, 0.45)
 local sprite_walk_back = 		Resources.sprite_load(NAMESPACE, "captainWalkBack", path.combine(PATH, "Sprites/walkBack.png"), 8, 12, 18, 0.75)
 local sprite_jump = 			Resources.sprite_load(NAMESPACE, "captainJump", path.combine(PATH, "Sprites/jump.png"), 1, 10, 20)
 local sprite_jump_half = 		Resources.sprite_load(NAMESPACE, "captainJumpHalf", path.combine(PATH, "Sprites/jumpHalf.png"), 1, 7, 3)
@@ -310,7 +310,7 @@ objHacking:clear_callbacks()
 
 --Beacon: Healing
 local healing = Skill.new(NAMESPACE, "captainBeaconHealing")
-healing:set_skill_icon(sprite_skills, 9)
+healing:set_skill_icon(sprite_skills, 10)
 healing:clear_callbacks()
 
 --create a skill slot that will show up in the misc slot selections
@@ -319,7 +319,7 @@ unlockableHealing.skill_id = healing.value
 
 --Beacon: Shocking
 local shocking = Skill.new(NAMESPACE, "captainBeaconShocking")
-shocking:set_skill_icon(sprite_skills, 10)
+shocking:set_skill_icon(sprite_skills, 11)
 shocking:clear_callbacks()
 
 local unlockableShocking = gm["@@NewGMLObject@@"](gm.constants.SurvivorSkillLoadoutUnlockable)
@@ -327,7 +327,7 @@ unlockableShocking.skill_id = shocking.value
 
 --Beacon: Resupply
 local resupply = Skill.new(NAMESPACE, "captainBeaconResupply")
-resupply:set_skill_icon(sprite_skills, 11)
+resupply:set_skill_icon(sprite_skills, 12)
 resupply:clear_callbacks()
 
 local unlockableResupply = gm["@@NewGMLObject@@"](gm.constants.SurvivorSkillLoadoutUnlockable)
@@ -335,7 +335,7 @@ unlockableResupply.skill_id = resupply.value
 
 --Beacon: Hacking
 local hacking = Skill.new(NAMESPACE, "captainBeaconHacking")
-hacking:set_skill_icon(sprite_skills, 12)
+hacking:set_skill_icon(sprite_skills, 13)
 hacking:clear_callbacks()
 
 local unlockableHacking = gm["@@NewGMLObject@@"](gm.constants.SurvivorSkillLoadoutUnlockable)
@@ -343,7 +343,7 @@ unlockableHacking.skill_id = hacking.value
 
 --Unavailable
 local unavailable = Skill.newEmpty(NAMESPACE, "captainUnavailable")
-unavailable:set_skill_icon(sprite_skills, 8)
+unavailable:set_skill_icon(sprite_skills, 9)
 unavailable:clear_callbacks()
 
 
@@ -875,22 +875,22 @@ end)
 
 --Orbital Supply Beacon
 local priHealing = Skill.new(NAMESPACE, "captainBeaconHealing_1")
-priHealing:set_skill_icon(sprite_skills, 9)
+priHealing:set_skill_icon(sprite_skills, 10)
 priHealing.require_key_press = true
 priHealing:clear_callbacks()
 
 local priShocking = Skill.new(NAMESPACE, "captainBeaconShocking_1")
-priShocking:set_skill_icon(sprite_skills, 10)
+priShocking:set_skill_icon(sprite_skills, 11)
 priShocking.require_key_press = true
 priShocking:clear_callbacks()
 
 local priResupply = Skill.new(NAMESPACE, "captainBeaconResupply_1")
-priResupply:set_skill_icon(sprite_skills, 11)
+priResupply:set_skill_icon(sprite_skills, 12)
 priResupply.require_key_press = true
 priResupply:clear_callbacks()
 
 local priHacking = Skill.new(NAMESPACE, "captainBeaconHacking_1")
-priHacking:set_skill_icon(sprite_skills, 12)
+priHacking:set_skill_icon(sprite_skills, 13)
 priHacking.require_key_press = true
 priHacking:clear_callbacks()
 
