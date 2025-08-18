@@ -72,7 +72,7 @@ cap:add_skin("Judgement", 6)
 
 
 cap:set_cape_offset(0, -8, 1, -2)
-cap:set_primary_color(Color.from_rgb(190, 186, 146))
+cap:set_primary_color(Color.from_rgb(53, 95, 184))
 
 cap.sprite_loadout = sprite_loadout
 cap.sprite_portrait = sprite_portrait
@@ -441,6 +441,19 @@ end)
 stvulcan:onStep(function(actor, data)
 	actor:skill_util_step_strafe_sprites()
 	actor:skill_util_strafe_turn_turn_if_direction_changed()
+	
+	if actor.sprite_index == actor.sprite_walk_half[2] then
+		local walk_offset = 0
+		local leg_frame = math.floor(actor.image_index)
+		if leg_frame == 1 or leg_frame == 5 then
+			walk_offset = -1
+		elseif leg_frame == 0 or leg_frame == 2 or leg_frame == 4 or leg_frame == 6 then
+			walk_offset = 0
+		elseif leg_frame == 3 or leg_frame == 7 then
+			walk_offset = 1
+		end
+		actor.ydisp = walk_offset -- ydisp controls upper body offset
+	end
 	
 	if data.fired == 0 then
 		
@@ -814,6 +827,19 @@ stprobe:onStep(function(actor, data)
 	actor:skill_util_step_strafe_sprites()
 	actor:skill_util_strafe_turn_turn_if_direction_changed()
 	
+	if actor.sprite_index == actor.sprite_walk_half[2] then
+		local walk_offset = 0
+		local leg_frame = math.floor(actor.image_index)
+		if leg_frame == 1 or leg_frame == 5 then
+			walk_offset = -1
+		elseif leg_frame == 0 or leg_frame == 2 or leg_frame == 4 or leg_frame == 6 then
+			walk_offset = 0
+		elseif leg_frame == 3 or leg_frame == 7 then
+			walk_offset = 1
+		end
+		actor.ydisp = walk_offset -- ydisp controls upper body offset
+	end
+	
 	actor:skill_util_strafe_turn_update(0.2, 0.9)
 	actor:skill_util_strafe_update(0.2, 0.9)
 	
@@ -956,7 +982,31 @@ beacon:clear_callbacks()
 local stbeacon = State.new(NAMESPACE, "orbitalSupplyBeacon")
 stbeacon:clear_callbacks()
 
+local beacon2 = Skill.new(NAMESPACE, "captainVboosted")
+beacon2:set_skill_icon(sprite_skills, 7)
+beacon:set_skill_upgrade(beacon2)
+beacon2.cooldown = 10
+beacon2.is_primary = true
+beacon2.is_utility = false
+beacon2.damage = 10
+beacon2.hold_facing_direction = true
+beacon2.override_strafe_direction = true
+beacon2.ignore_aim_direction = true
+beacon2.required_interrupt_priority = State.ACTOR_STATE_INTERRUPT_PRIORITY.any
+beacon2.require_key_press = true
+beacon2.allow_buffered_input = true
+beacon2:clear_callbacks()
+
 beacon:onActivate(function(actor)
+	if actor.callcooldown <= 0 then
+		actor:refresh_skill(Skill.SLOT.special)
+		actor:enter_state(stbeacon)
+	elseif actor:get_active_skill(Skill.SLOT.special).skill_id == beacon.value then
+		actor:refresh_skill(Skill.SLOT.special)
+	end
+end)
+
+beacon2:onActivate(function(actor)
 	if actor.callcooldown <= 0 then
 		actor:refresh_skill(Skill.SLOT.special)
 		actor:enter_state(stbeacon)
@@ -1039,6 +1089,19 @@ end)
 stbeacon:onStep(function(actor, data)
 	actor:skill_util_step_strafe_sprites()
 	actor:skill_util_strafe_turn_turn_if_direction_changed()
+	
+	if actor.sprite_index == actor.sprite_walk_half[2] then
+		local walk_offset = 0
+		local leg_frame = math.floor(actor.image_index)
+		if leg_frame == 1 or leg_frame == 5 then
+			walk_offset = -1
+		elseif leg_frame == 0 or leg_frame == 2 or leg_frame == 4 or leg_frame == 6 then
+			walk_offset = 0
+		elseif leg_frame == 3 or leg_frame == 7 then
+			walk_offset = 1
+		end
+		actor.ydisp = walk_offset -- ydisp controls upper body offset
+	end
 	
 	if actor.v_skill == false and actor.beaconallowcancel == 0 then
 		actor.beaconallowcancel = 1

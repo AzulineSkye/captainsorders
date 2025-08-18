@@ -18,7 +18,7 @@
 		},
 	"captainX": {
 			"name": "Power Tazer",
-			"description": "Fire a fast tazer for <y>60% damage</c>, <y>shocking</c> enemies, immobilizing them."
+			"description": "Fire a fast tazer for <y>60% damage</c>, <b>shocking</c> enemies.\n<b>Shocked</c> enemies are <y>immobilized until being hit again</c>."
 		},
 	"captainC": {
 			"name": "Orbital Probe",
@@ -46,11 +46,11 @@
 		},
 	"captainBeaconShocking": {
 			"name": "Beacon: Shocking",
-			"description": "Periodically <y>shock</c> all nearby enemies, immobilizing them."
+			"description": "Periodically <b>shocks</c> all nearby enemies."
 		},
 	"captainBeaconShocking_1": {
 			"name": "Beacon: Shocking",
-			"description": "Periodically <y>shock</c> all nearby enemies, immobilizing them."
+			"description": "Periodically <b>shocks</c> all nearby enemies."
 		},
 	"captainBeaconResupply": {
 			"name": "Beacon: Resupply",
