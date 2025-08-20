@@ -76,6 +76,14 @@
 			"name": "Beacon: Upgrade",
 			"description": "<b>Upgrade</c> all nearby interactables once over time. \n<b>Upgrading</c> an interactable to its highest tier requires 2 beacons."
 		},
+	"captainBeaconPunisher": {
+			"name": "Beacon: Punisher",
+			"description": "Nearby allies gain <y>increased base damage</c> based on the <r>number of enemies this beacon hits</c> on impact."
+		},
+	"captainBeaconPunisher_1": {
+			"name": "Beacon: Punisher",
+			"description": "Nearby allies gain <y>increased base damage</c> based on the <r>number of enemies this beacon hits</c> on impact."
+		},
 	"captainUnavailable": {
 			"name": "Unavailable",
 			"description": "You have already called in a Supply Drop this stage."

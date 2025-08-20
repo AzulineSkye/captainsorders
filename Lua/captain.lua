@@ -1,7 +1,7 @@
 local sprite_loadout = 			Resources.sprite_load(NAMESPACE, "captainSelect", path.combine(PATH, "Sprites/select.png"), 20, 28, 0)
 local sprite_portrait = 		Resources.sprite_load(NAMESPACE, "captainPortrait", path.combine(PATH, "Sprites/portrait.png"), 4)
 local sprite_portrait_small	= 	Resources.sprite_load(NAMESPACE, "captainPortraitSmall", path.combine(PATH, "Sprites/portraitSmall.png"))
-local sprite_skills = 			Resources.sprite_load(NAMESPACE, "captainSkills", path.combine(PATH, "Sprites/skills.png"), 14)
+local sprite_skills = 			Resources.sprite_load(NAMESPACE, "captainSkills", path.combine(PATH, "Sprites/skills.png"), 16)
 
 local sprite_idle = 			Resources.sprite_load(NAMESPACE, "captainIdle", path.combine(PATH, "Sprites/idle.png"), 1, 11, 18)
 local sprite_idle_half = 		Resources.sprite_load(NAMESPACE, "captainIdleHalf", path.combine(PATH, "Sprites/idleHalf.png"), 1, 8, 3)
