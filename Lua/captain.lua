@@ -29,6 +29,8 @@ local sprite_healing = 			Resources.sprite_load(NAMESPACE, "captainBeaconHealing
 local sprite_shocking = 		Resources.sprite_load(NAMESPACE, "captainBeaconShocking", path.combine(PATH, "Sprites/beaconShocking.png"), 22, 11, 44)
 local sprite_resupply = 		Resources.sprite_load(NAMESPACE, "captainBeaconResupply", path.combine(PATH, "Sprites/beaconResupply.png"), 22, 11, 44)
 local sprite_hacking = 			Resources.sprite_load(NAMESPACE, "captainBeaconHacking", path.combine(PATH, "Sprites/beaconHacking.png"), 22, 11, 44)
+local sprite_enhance = 			Resources.sprite_load(NAMESPACE, "captainBeaconEnhance", path.combine(PATH, "Sprites/beaconEnhance.png"), 22, 11, 44)
+local sprite_punisher = 			Resources.sprite_load(NAMESPACE, "captainBeaconPunisher", path.combine(PATH, "Sprites/beaconPunisher.png"), 22, 11, 44)
 local sprite_impact = 			Resources.sprite_load(NAMESPACE, "captainBeaconImpact", path.combine(PATH, "Sprites/beaconimpact.png"), 5, 117, 203)
 local sprite_bar = 				Resources.sprite_load(NAMESPACE, "captainBeaconHackingBar", path.combine(PATH, "Sprites/beaconHackingBar.png"), 1, 23, 5)
 local sprite_log = 				Resources.sprite_load(NAMESPACE, "captainLog", path.combine(PATH, "Sprites/captainLog.png"), 1, 180, 180)
@@ -306,6 +308,15 @@ objHacking.obj_sprite = sprite_hacking
 objHacking.obj_depth = 12
 objHacking:clear_callbacks()
 
+local objEnhance = Object.new(NAMESPACE, "objCaptainBeaconEnhance")
+objEnhance.obj_sprite = sprite_enhance
+objEnhance.obj_depth = 12
+objEnhance:clear_callbacks()
+
+local objPunisher = Object.new(NAMESPACE, "objCaptainBeaconPunisher")
+objPunisher.obj_sprite = sprite_punisher
+objPunisher.obj_depth = 12
+objPunisher:clear_callbacks()
 
 
 --Beacon: Healing
@@ -341,6 +352,22 @@ hacking:clear_callbacks()
 local unlockableHacking = gm["@@NewGMLObject@@"](gm.constants.SurvivorSkillLoadoutUnlockable)
 unlockableHacking.skill_id = hacking.value
 
+--Beacon: Enhance
+local enhance = Skill.new(NAMESPACE, "captainBeaconEnhance")
+enhance:set_skill_icon(sprite_skills, 14)
+enhance:clear_callbacks()
+
+local unlockableEnhance = gm["@@NewGMLObject@@"](gm.constants.SurvivorSkillLoadoutUnlockable)
+unlockableEnhance.skill_id = enhance.value
+
+--Beacon: Punisher
+local punisher = Skill.new(NAMESPACE, "captainBeaconPunisher")
+punisher:set_skill_icon(sprite_skills, 15)
+punisher:clear_callbacks()
+
+local unlockablePunisher = gm["@@NewGMLObject@@"](gm.constants.SurvivorSkillLoadoutUnlockable)
+unlockablePunisher.skill_id = punisher.value
+
 --Unavailable
 local unavailable = Skill.newEmpty(NAMESPACE, "captainUnavailable")
 unavailable:set_skill_icon(sprite_skills, 9)
@@ -357,6 +384,8 @@ gm.array_push(misc1.elements, unlockableHealing)
 gm.array_push(misc1.elements, unlockableShocking)
 gm.array_push(misc1.elements, unlockableResupply)
 gm.array_push(misc1.elements, unlockableHacking)
+gm.array_push(misc1.elements, unlockableEnhance)
+gm.array_push(misc1.elements, unlockablePunisher)
 cap.all_skill_families:resize(4) --limit the size so that it doesnt start duplicating itself
 cap.all_skill_families:push(misc1)
 
@@ -367,6 +396,8 @@ gm.array_push(misc2.elements, unlockableHealing)
 gm.array_push(misc2.elements, unlockableShocking)
 gm.array_push(misc2.elements, unlockableResupply)
 gm.array_push(misc2.elements, unlockableHacking)
+gm.array_push(misc2.elements, unlockableEnhance)
+gm.array_push(misc2.elements, unlockablePunisher)
 cap.all_skill_families:resize(5)
 cap.all_skill_families:push(misc2)
 
@@ -920,6 +951,16 @@ priHacking:set_skill_icon(sprite_skills, 13)
 priHacking.require_key_press = true
 priHacking:clear_callbacks()
 
+local priEnhance = Skill.new(NAMESPACE, "captainBeaconEnhance_1")
+priEnhance:set_skill_icon(sprite_skills, 14)
+priEnhance.require_key_press = true
+priEnhance:clear_callbacks()
+
+local priPunisher = Skill.new(NAMESPACE, "captainBeaconPunisher_1")
+priPunisher:set_skill_icon(sprite_skills, 15)
+priPunisher.require_key_press = true
+priPunisher:clear_callbacks()
+
 local function captain_remove_beacon_overrides(actor)
 	actor:remove_skill_override(Skill.SLOT.primary, priHealing, 20)
 	actor:remove_skill_override(Skill.SLOT.secondary, priHealing, 20)
@@ -929,6 +970,10 @@ local function captain_remove_beacon_overrides(actor)
 	actor:remove_skill_override(Skill.SLOT.secondary, priResupply, 20)
 	actor:remove_skill_override(Skill.SLOT.primary, priHacking, 20)
 	actor:remove_skill_override(Skill.SLOT.secondary, priHacking, 20)
+	actor:remove_skill_override(Skill.SLOT.primary, priEnhance, 20)
+	actor:remove_skill_override(Skill.SLOT.secondary, priEnhance, 20)
+	actor:remove_skill_override(Skill.SLOT.primary, priPunisher, 20)
+	actor:remove_skill_override(Skill.SLOT.secondary, priPunisher, 20)
 	actor:remove_skill_override(Skill.SLOT.primary, unavailable, 30)
 	actor:remove_skill_override(Skill.SLOT.secondary, unavailable, 30)
 end
@@ -963,6 +1008,14 @@ end)
 
 priHacking:onActivate(function(actor)
 	captain_create_beacon(actor, objHacking)
+end)
+
+priEnhance:onActivate(function(actor)
+	captain_create_beacon(actor, objEnhance)
+end)
+
+priPunisher:onActivate(function(actor)
+	captain_create_beacon(actor, objPunisher)
 end)
 
 local beacon = cap:get_special()
@@ -1063,6 +1116,10 @@ stbeacon:onEnter(function(actor, data)
 			actor:add_skill_override(Skill.SLOT.primary, priResupply, 20)
 		elseif beacon1 == 3 then
 			actor:add_skill_override(Skill.SLOT.primary, priHacking, 20)
+		elseif beacon1 == 4 then
+			actor:add_skill_override(Skill.SLOT.primary, priEnhance, 20)
+		elseif beacon1 == 5 then
+			actor:add_skill_override(Skill.SLOT.primary, priPunisher, 20)
 		end
 	else
 		actor:add_skill_override(Skill.SLOT.primary, unavailable, 30)
@@ -1077,6 +1134,10 @@ stbeacon:onEnter(function(actor, data)
 			actor:add_skill_override(Skill.SLOT.secondary, priResupply, 20)
 		elseif beacon2 == 3 then
 			actor:add_skill_override(Skill.SLOT.secondary, priHacking, 20)
+		elseif beacon2 == 4 then
+			actor:add_skill_override(Skill.SLOT.secondary, priEnhance, 20)
+		elseif beacon2 == 5 then
+			actor:add_skill_override(Skill.SLOT.secondary, priPunisher, 20)
 		end
 	else
 		actor:add_skill_override(Skill.SLOT.secondary, unavailable, 30)
@@ -1232,7 +1293,7 @@ local function setupgenericbeacondraw(self, data, color, drawarearadius)
 	end
 end
 
-
+--Healing Beacon
 
 objHealing:onCreate(function(self)
 	local data = self:get_data()
@@ -1276,7 +1337,7 @@ objHealing:onDraw(function(self)
 	setupgenericbeacondraw(self, data, Color.from_rgb(189, 231, 90), true)
 end)
 
-
+--Shocking Beacon
 
 objShocking:onCreate(function(self)
 	local data = self:get_data()
@@ -1338,7 +1399,7 @@ objShocking:onDraw(function(self)
 	end
 end)
 
-
+--Resupply Beacon
 
 objResupply:onCreate(function(self)
 	local data = self:get_data()
@@ -1360,7 +1421,7 @@ objResupply:onDraw(function(self)
 	setupgenericbeacondraw(self, data, Color.from_rgb(214, 174, 90), false)
 end)
 
-
+--Hacking Beacon
 
 objHacking:onCreate(function(self)
 	local data = self:get_data()
@@ -1469,7 +1530,49 @@ objHacking:onDraw(function(self)
 	end
 end)
 
+--Enhance Beacon
 
+objEnhance:onCreate(function(self)
+	local data = self:get_data()
+	setupgenericbeacon(self, data)
+end)
+
+objEnhance:onStep(function(self)
+	local data = self:get_data()
+	
+	if data.beingcalled == 1 then
+		setupgenericbeaconlanding(self, data)
+	else
+		data.activetimer = data.activetimer + 1
+	end
+end)
+
+objEnhance:onDraw(function(self)
+	local data = self:get_data()
+	setupgenericbeacondraw(self, data, Color.from_rgb(214, 174, 90), false)
+end)
+
+--Punisher Beacon
+
+objPunisher:onCreate(function(self)
+	local data = self:get_data()
+	setupgenericbeacon(self, data)
+end)
+
+objPunisher:onStep(function(self)
+	local data = self:get_data()
+	
+	if data.beingcalled == 1 then
+		setupgenericbeaconlanding(self, data)
+	else
+		data.activetimer = data.activetimer + 1
+	end
+end)
+
+objPunisher:onDraw(function(self)
+	local data = self:get_data()
+	setupgenericbeacondraw(self, data, Color.from_rgb(214, 174, 90), false)
+end)
 
 
 
