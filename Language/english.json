@@ -30,7 +30,7 @@
 		},
 	"captainV": {
 			"name": "Orbital Supply Beacon",
-			"description": "Request a <b>permanent</c> Supply Beacon. Can only be requested <b>twice per stage</c>."
+			"description": "Request a <b>permanent</c> Supply Beacon. Deals <y>1,000% damage</c> on impact. Can only be requested <b>twice per stage</c>. "
 		},
 	"captainVboosted": {
 			"name": "Reserve Supply Beacons",
