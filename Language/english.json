@@ -68,12 +68,12 @@
 			"name": "Beacon: Hacking",
 			"description": "<b>Hack</c> all nearby purchasables to a cost of <b>$0</c> over time."
 		},
-	"captainBeaconUpgrade": {
-			"name": "Beacon: Upgrade",
+	"captainBeaconEnhance": {
+			"name": "Beacon: Enhance",
 			"description": "<b>Upgrade</c> all nearby interactables once over time. \n<b>Upgrading</c> an interactable to its highest tier requires 2 beacons."
 		},
-	"captainBeaconUpgrade_1": {
-			"name": "Beacon: Upgrade",
+	"captainBeaconEnhance_1": {
+			"name": "Beacon: Enhance",
 			"description": "<b>Upgrade</c> all nearby interactables once over time. \n<b>Upgrading</c> an interactable to its highest tier requires 2 beacons."
 		},
 	"captainBeaconPunisher": {
