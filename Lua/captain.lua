@@ -1083,6 +1083,7 @@ efPreview3:onDraw(function(self)
 		gm.draw_circle(collision_x2, collision_y2, 138, true)
 		gm.draw_set_alpha(0.5)
 		gm.draw_sprite(sprite_generic, 0, collision_x2, collision_y2 - 12)
+		gm.draw_set_alpha(1)
 	else
 		self:destroy()
 	end
