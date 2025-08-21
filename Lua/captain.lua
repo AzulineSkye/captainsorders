@@ -31,6 +31,7 @@ local sprite_resupply = 		Resources.sprite_load(NAMESPACE, "captainBeaconResuppl
 local sprite_hacking = 			Resources.sprite_load(NAMESPACE, "captainBeaconHacking", path.combine(PATH, "Sprites/beaconHacking.png"), 22, 11, 44)
 local sprite_enhance = 			Resources.sprite_load(NAMESPACE, "captainBeaconEnhance", path.combine(PATH, "Sprites/beaconEnhance.png"), 22, 11, 44)
 local sprite_punisher = 			Resources.sprite_load(NAMESPACE, "captainBeaconPunisher", path.combine(PATH, "Sprites/beaconPunisher.png"), 22, 11, 44)
+local sprite_generic = 			Resources.sprite_load(NAMESPACE, "captainBeaconGeneric", path.combine(PATH, "Sprites/beaconGeneric.png"), 1, 11, 44)
 local sprite_impact = 			Resources.sprite_load(NAMESPACE, "captainBeaconImpact", path.combine(PATH, "Sprites/beaconimpact.png"), 5, 117, 203)
 local sprite_bar = 				Resources.sprite_load(NAMESPACE, "captainBeaconHackingBar", path.combine(PATH, "Sprites/beaconHackingBar.png"), 1, 23, 5)
 local sprite_log = 				Resources.sprite_load(NAMESPACE, "captainLog", path.combine(PATH, "Sprites/captainLog.png"), 1, 180, 180)
@@ -1080,7 +1081,8 @@ efPreview3:onDraw(function(self)
 		gm.draw_set_colour(Color.from_rgb(70, 184, 221))
 		gm.draw_circle(collision_x2, collision_y2, 132, true)
 		gm.draw_circle(collision_x2, collision_y2, 138, true)
-		gm.draw_sprite(sprite_healing, 6, collision_x2, collision_y2 - 12)
+		gm.draw_set_alpha(0.5)
+		gm.draw_sprite(sprite_generic, 0, collision_x2, collision_y2 - 12)
 	else
 		self:destroy()
 	end
