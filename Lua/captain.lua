@@ -550,6 +550,12 @@ stvulcan:onStep(function(actor, data)
 			release = gm.bool(actor.activity_var2)
 		end
 
+		if actor:player_util_get_rapid_fire() then
+			if actor.image_index2 == 13 then
+				release = true
+			end
+		end
+
 		if release and data.fired == 0 then
 			if gm._mod_net_isOnline() then
 				if gm._mod_net_isHost() then
