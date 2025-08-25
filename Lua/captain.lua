@@ -240,21 +240,34 @@ shock.show_icon = false
 shock:clear_callbacks()
 
 shock:onApply(function(actor, stack)
-	actor.activity_type = 50
-	actor.__activity_handler_state = 50
+	actor.pHspeed = 0
+	actor.pHmax = 0
+	actor.state = 0
+	if not GM.actor_is_boss(actor) then
+		actor.activity = 50
+		actor.__activity_handler_state = 50
+		
+	end
 	actor.captainshockthreshold = actor.maxhp * 0.1
 	actor.captainshocklightningprevposx = actor.x
 	actor.captainshocklightningprevposy = actor.y
 end)
 
 shock:onPostStep(function(actor, stack)
-	actor.activity_type = 50
-	actor.__activity_handler_state = 50
 	actor.pHmax = 0
-	actor.state = 0
-	if actor.sprite_death ~= nil then
-		actor.sprite_index = actor.sprite_death
-		actor.image_index = 0
+	actor.pHspeed = 0
+
+	if not GM.actor_is_boss(actor) then
+		actor.activity = 50
+		actor.__activity_handler_state = 50
+		
+		if actor.sprite_death ~= nil then
+			actor.sprite_index = actor.sprite_death
+			actor.image_index = 0
+			print("friend")
+		end
+		print(actor.sprite_death)
+
 	end
 end)
 
@@ -280,8 +293,9 @@ shock:onDamagedProc(function(actor, attacker, stack, hit_info)
 end)
 
 shock:onRemove(function(actor, stack)
-	actor.activity_type = 0
-	actor.__activity_handler_state = 0
+	if not GM.actor_is_boss(actor) then
+		actor:skill_util_reset_activity_state()
+	end
 end)
 
 
