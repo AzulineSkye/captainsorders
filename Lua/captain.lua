@@ -551,7 +551,7 @@ stvulcan:onStep(function(actor, data)
 		end
 
 		if actor:player_util_get_rapid_fire() then
-			if actor.image_index2 == 13 then
+			if data.flashed == 1 then
 				release = true
 			end
 		end
