@@ -243,8 +243,9 @@ shock:onApply(function(actor, stack)
 	actor.pHspeed = 0
 	actor.pHmax = 0
 	if not GM.actor_is_boss(actor) then
-		actor:alarm_set(7, 20)
+		actor:alarm_set(7, 60)
 		actor:alarm_set(2, 100)
+		
 	end
 	actor.captainshockthreshold = actor.maxhp * 0.1
 	actor.captainshocklightningprevposx = actor.x
@@ -254,16 +255,17 @@ end)
 shock:onPostStep(function(actor, stack)
 	actor.pHmax = 0
 	actor.pHspeed = 0
-
+	
 	if not GM.actor_is_boss(actor) then
-		actor:alarm_set(7, 20)
+		actor:alarm_set(7, 60)
 		actor:alarm_set(2, 100)
-		
+	end
+	if not GM.actor_is_boss(actor) then
+		actor.state = 0
 		if actor.sprite_death ~= nil then
 			actor.sprite_index = actor.sprite_death
 			actor.image_index = 0
 		end
-
 	end
 end)
 
@@ -291,6 +293,7 @@ end)
 shock:onRemove(function(actor, stack)
 	if not GM.actor_is_boss(actor) then
 		actor.activity = 0
+		actor:alarm_set(7, 0)
 		actor:skill_util_reset_activity_state()
 	end
 end)
