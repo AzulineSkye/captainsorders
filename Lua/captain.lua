@@ -164,6 +164,20 @@ parProbeTrailCircle:set_shape(Particle.SHAPE.circle)
 parProbeTrailCircle:set_scale(0.8, 0.8)
 parProbeTrailCircle:set_size(1, 1, 0, 0)
 
+local parGunCircle = Particle.new(NAMESPACE, "particleCapGunCircle")
+parGunCircle:set_color2(Color.from_rgb(255, 222, 133), Color.from_rgb(108, 247, 115))
+parGunCircle:set_life(8, 8)
+parGunCircle:set_shape(Particle.SHAPE.circle)
+parGunCircle:set_scale(0.15, 0.15)
+parGunCircle:set_size(0.2, 0.3, 0.1, 0.5)
+
+local parGunCircle2 = Particle.new(NAMESPACE, "particleCapGunCharged")
+parGunCircle2:set_color2(Color.from_rgb(255, 255, 255), Color.from_rgb(255, 222, 133))
+parGunCircle2:set_life(8, 8)
+parGunCircle2:set_shape(Particle.SHAPE.circle)
+parGunCircle2:set_scale(0.27, 0.27)
+parGunCircle2:set_size(0.2, 0.3, 0.1, 0)
+
 local parProbeTrailLine = Particle.new(NAMESPACE, "particleCaptainProbeTrailLine")
 parProbeTrailLine:set_color2(Color.from_rgb(255, 236, 215), Color.from_rgb(255, 174, 92))
 parProbeTrailLine:set_life(15, 15)
@@ -413,16 +427,16 @@ vulcan.is_primary = true
 vulcan.is_utility = false
 vulcan.required_interrupt_priority = State.ACTOR_STATE_INTERRUPT_PRIORITY.any
 vulcan.hold_facing_direction = true
-vulcan.require_key_press = true
+vulcan.require_key_press = false
 vulcan.allow_buffered_input = true
-vulcan:clear_callbacks()
 
 local stvulcan = State.new(NAMESPACE, "vulcanShotgun")
-stvulcan:clear_callbacks()
-
+vulcan:clear_callbacks()
 vulcan:onActivate(function(actor)
 	actor:enter_state(stvulcan)
 end)
+
+stvulcan:clear_callbacks()
 
 efPreview1:onDraw(function(self)
 	local actor = self.parent
@@ -433,16 +447,16 @@ efPreview1:onDraw(function(self)
 		local xx = math.sin(angle) * range
 		local yy = math.cos(angle) * range
 		
-		gm.draw_set_colour(Color.from_hsv(0, 0, 100))
+		gm.draw_set_colour(Color.from_hsv(0, 77, 100))
 		gm.draw_set_alpha(actor.alpha_preview)
 		actor:collision_line_advanced(actor.x + 24 * actor.image_xscale, actor.y - 9, actor.x + xx * actor.image_xscale, actor.y - 9 + yy, gm.constants.pBlock, true, true)
 		local collision_x1 = gm.variable_global_get("collision_x")
 		local collision_y1 = gm.variable_global_get("collision_y")
-		gm.draw_line_width(actor.x + 24 * actor.image_xscale, actor.y - 9, collision_x1, collision_y1, 1)
+		gm.draw_line_width(actor.x + 24 * actor.image_xscale, actor.y - 9, collision_x1, collision_y1, 3.5)
 		actor:collision_line_advanced(actor.x + 24 * actor.image_xscale, actor.y - 9, actor.x + xx * actor.image_xscale, actor.y - 9 - yy, gm.constants.pBlock, true, true)
 		local collision_x2 = gm.variable_global_get("collision_x")
 		local collision_y2 = gm.variable_global_get("collision_y")
-		gm.draw_line_width(actor.x + 24 * actor.image_xscale, actor.y - 9, collision_x2, collision_y2, 1)
+		gm.draw_line_width(actor.x + 24 * actor.image_xscale, actor.y - 9, collision_x2, collision_y2, 3.5)
 		gm.draw_set_alpha(1)
 	else
 		self:destroy()
@@ -468,6 +482,7 @@ stvulcan:onEnter(function(actor, data)
 	actor.alpha_preview = math.min(1, 2 * (1 - (data.chargetimer / 72)))
 	local preview = efPreview1:create(actor.x, actor.y)
 	preview.parent = actor
+	
 end)
 
 stvulcan:onStep(function(actor, data)
@@ -487,7 +502,7 @@ stvulcan:onStep(function(actor, data)
 		actor.ydisp = walk_offset -- ydisp controls upper body offset
 	end
 	
-	if data.fired == 0 then
+	if data.fired < 1 then
 		
 		actor:skill_util_strafe_turn_update(0.20 * actor.attack_speed, 0.60)
 		actor:skill_util_strafe_update(0.20 * actor.attack_speed, 0.60)
@@ -495,17 +510,19 @@ stvulcan:onStep(function(actor, data)
 		actor.spread_preview = math.max(0, math.floor(data.chargetimer / 4))
 		actor.range_preview = 1000 - 666 * (data.chargetimer / 72)
 		actor.alpha_preview = math.min(1, 2 * (1 - (data.chargetimer / 72)))
-	
+		
 		if data.shotgun_charging_sound == -1 then
 			data.shotgun_charging_sound = gm.sound_play_at(gm.constants.wLoader_BulletPunch_ChargeLoop, 1, 1.5, actor.x, actor.y)
 		end
 		
 		if data.chargetimer > 0 then
 			data.chargetimer = data.chargetimer - 1 * actor.attack_speed
+			parGunCircle:create(actor.x + 17 * actor.image_xscale, actor.y - 9, 1, Particle.SYSTEM.above)
 		else
 			if gm.audio_is_playing(data.shotgun_charging_sound) then
 				gm.audio_stop_sound(data.shotgun_charging_sound)
 			end
+			parGunCircle2:create(actor.x + 17 * actor.image_xscale, actor.y - 9, 1, Particle.SYSTEM.above)
 			
 			if data.flashed == 0 then
 				actor:sound_play(gm.constants.wPickupOLD, 0.7, 4)
