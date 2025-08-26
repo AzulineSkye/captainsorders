@@ -242,6 +242,7 @@ shock:clear_callbacks()
 shock:onApply(function(actor, stack)
 	actor.pHspeed = 0
 	actor.pHmax = 0
+	
 	if not GM.actor_is_boss(actor) then
 		actor:alarm_set(7, 60)
 		actor:alarm_set(2, 100)
@@ -555,7 +556,7 @@ stvulcan:onStep(function(actor, data)
 			release = gm.bool(actor.activity_var2)
 		end
 
-		if actor:player_util_get_rapid_fire() then
+		if params.vulcanAutoFire == true then
 			if data.flashed == 1 then
 				release = true
 			end
