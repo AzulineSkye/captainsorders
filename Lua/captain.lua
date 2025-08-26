@@ -262,7 +262,9 @@ shock:onPostStep(function(actor, stack)
 	end
 	if not GM.actor_is_boss(actor) then
 		actor.state = 0
-		if actor.sprite_death ~= nil then
+		if not actor.sprite_death ~= nil then
+			actor.sprite_index = actor.sprite_index
+		else
 			actor.sprite_index = actor.sprite_death
 			actor.image_index = 0
 		end
@@ -293,7 +295,7 @@ end)
 shock:onRemove(function(actor, stack)
 	if not GM.actor_is_boss(actor) then
 		actor.activity = 0
-		actor:alarm_set(7, 0)
+		actor:alarm_set(7, 30)
 		actor:skill_util_reset_activity_state()
 	end
 end)
