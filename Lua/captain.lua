@@ -958,7 +958,12 @@ end)
 stprobe:onExit(function(actor, data)
 	actor:skill_util_strafe_exit()
 	actor.probeallowcancel = 0
-	actor.callcooldown = 10
+	if actor:get_active_skill(Skill.SLOT.primary).stock >= 3 then
+		actor:refresh_skill(Skill.SLOT.utility)
+		actor.callcooldown = 3
+	else
+		actor.callcooldown = 10
+	end
 	actor:remove_skill_override(Skill.SLOT.primary, priProbe, 10)
 	if gm.audio_is_playing(data.call_sound) then
 		gm.audio_stop_sound(data.call_sound)
