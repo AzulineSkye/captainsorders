@@ -441,7 +441,7 @@ cap.all_skill_families:push(misc2)
 local vulcan = cap:get_primary()
 vulcan:set_skill_icon(sprite_skills, 0)
 vulcan.cooldown = 60
-vulcan.damage = 0.6
+vulcan.damage = 0.8
 vulcan.is_primary = true
 vulcan.is_utility = false
 vulcan.required_interrupt_priority = State.ACTOR_STATE_INTERRUPT_PRIORITY.any
@@ -596,13 +596,13 @@ stvulcan:onStep(function(actor, data)
 				
 				local buff_shadow_clone = Buff.find("ror", "shadowClone")
 				for i=0, actor:buff_stack_count(buff_shadow_clone) do
-					for s=0, 8 do
+					for s=0, 6 do
 						if cracker_shot then
 							local attack = actor:fire_bullet(actor.x, actor.y, data.range, actor:skill_util_facing_direction() + math.random(-data.spread, data.spread), actor:skill_get_damage(vulcan), 1, gm.constants.sSparks1, Attack_Info.TRACER.drill)
-							attack.attack_info.climb = (s + 1) * 8 + i * 8
+							attack.attack_info.climb = (s + 1) * 6 + i * 6
 						else
 							local attack = actor:fire_bullet(actor.x, actor.y, data.range, actor:skill_util_facing_direction() + math.random(-data.spread, data.spread), actor:skill_get_damage(vulcan), nil, gm.constants.sSparks6, Attack_Info.TRACER.bandit3_r)
-							attack.attack_info.climb = (s + 1) * 8 + i * 8
+							attack.attack_info.climb = (s + 1) * 6 + i * 6
 						end
 					end
 				end

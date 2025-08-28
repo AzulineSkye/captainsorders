@@ -14,7 +14,7 @@
 "skill" : {
 	"captainZ": {
 			"name": "Vulcan Shotgun",
-			"description": "Fire a blast of pellets for <y>8x60% damage</c>. Charging the attack narrows the <b>spread</c> and increases <b>range</c>."
+			"description": "Fire a blast of pellets for <y>6x80% damage</c>. Charging the attack narrows the <b>spread</c> and increases <b>range</c>."
 		},
 	"captainX": {
 			"name": "Power Tazer",
