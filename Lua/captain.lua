@@ -3,6 +3,20 @@ local sprite_portrait = 		Resources.sprite_load(NAMESPACE, "captainPortrait", pa
 local sprite_portrait_small	= 	Resources.sprite_load(NAMESPACE, "captainPortraitSmall", path.combine(PATH, "Sprites/portraitSmall.png"))
 local sprite_skills = 			Resources.sprite_load(NAMESPACE, "captainSkills", path.combine(PATH, "Sprites/skills.png"), 16)
 
+local sprite_portrait_S1 =		Resources.sprite_load(NAMESPACE, "captainPortraitS1", path.combine(PATH, "Sprites/portraitS1.png"), 4)
+local sprite_portrait_S2 =		Resources.sprite_load(NAMESPACE, "captainPortraitS2", path.combine(PATH, "Sprites/portraitS2.png"), 4)
+local sprite_portrait_S3 =		Resources.sprite_load(NAMESPACE, "captainPortraitS3", path.combine(PATH, "Sprites/portraitS3.png"), 4)
+local sprite_portrait_S4 =		Resources.sprite_load(NAMESPACE, "captainPortraitS4", path.combine(PATH, "Sprites/portraitS4.png"), 4)
+local sprite_portrait_S5 =		Resources.sprite_load(NAMESPACE, "captainPortraitS5", path.combine(PATH, "Sprites/portraitS5.png"), 4)
+local sprite_portrait_SPROV =	Resources.sprite_load(NAMESPACE, "captainPortraitSPROV", path.combine(PATH, "Sprites/portraitSPROV.png"), 4)
+
+local sprite_portrait_small_S1	= 	Resources.sprite_load(NAMESPACE, "captainPortraitSmallS1", path.combine(PATH, "Sprites/portraitSmallS1.png"))
+local sprite_portrait_small_S2	= 	Resources.sprite_load(NAMESPACE, "captainPortraitSmallS2", path.combine(PATH, "Sprites/portraitSmallS2.png"))
+local sprite_portrait_small_S3	= 	Resources.sprite_load(NAMESPACE, "captainPortraitSmallS3", path.combine(PATH, "Sprites/portraitSmallS3.png"))
+local sprite_portrait_small_S4	= 	Resources.sprite_load(NAMESPACE, "captainPortraitSmallS4", path.combine(PATH, "Sprites/portraitSmallS4.png"))
+local sprite_portrait_small_S5	= 	Resources.sprite_load(NAMESPACE, "captainPortraitSmallS5", path.combine(PATH, "Sprites/portraitSmallS5.png"))
+local sprite_portrait_small_SPROV	= 	Resources.sprite_load(NAMESPACE, "captainPortraitSmallSPROV", path.combine(PATH, "Sprites/portraitSmallSPROV.png"))
+
 local sprite_idle = 			Resources.sprite_load(NAMESPACE, "captainIdle", path.combine(PATH, "Sprites/idle.png"), 1, 10, 18)
 local sprite_idle_half = 		Resources.sprite_load(NAMESPACE, "captainIdleHalf", path.combine(PATH, "Sprites/idleHalf.png"), 1, 7, 3)
 local sprite_walk = 			Resources.sprite_load(NAMESPACE, "captainWalk", path.combine(PATH, "Sprites/walk.png"), 8, 10, 18, 0.75)
@@ -65,15 +79,6 @@ cap:set_animations({
 	decoy = sprite_decoy,
 })
 
-cap:set_palettes(sprite_palette, sprite_pallete, sprite_pallete)
-cap:add_skin("Militia", 1)
-cap:add_skin("Showman", 2)
-cap:add_skin("Admiral", 3)
-cap:add_skin("Malice", 4)
-cap:add_skin("Estranged", 5)
-cap:add_skin("Judgement", 6)
-
-
 cap:set_cape_offset(3, -10, 1, -7)
 cap:set_primary_color(Color.from_rgb(53, 95, 184))
 
@@ -83,6 +88,14 @@ cap.sprite_portrait_small = sprite_portrait_small
 cap.sprite_title = sprite_walk
 cap.sprite_idle = sprite_idle
 cap.sprite_credits = sprite_credits
+
+cap:set_palettes(sprite_palette, sprite_palette, sprite_palette)
+cap:add_skin("Militia", 1, sprite_loadout, sprite_portrait_S1, sprite_portrait_small_S1)
+cap:add_skin("Showman", 2, sprite_loadout, sprite_portrait_S2, sprite_portrait_small_S2)
+cap:add_skin("Admiral", 3, sprite_loadout, sprite_portrait_S3, sprite_portrait_small_S3)
+cap:add_skin("Malice", 4, sprite_loadout, sprite_portrait_S4, sprite_portrait_small_S4)
+cap:add_skin("Estranged", 5, sprite_loadout, sprite_portrait_S5, sprite_portrait_small_S5)
+cap:add_skin("Judgement", 6, sprite_loadout, sprite_portrait_SPROV, sprite_portrait_small_SPROV)
 
 local cap_log = Survivor_Log.new(cap, sprite_log, sprite_walk)
 cap_log.stat_regen_base = 0.01
@@ -269,6 +282,7 @@ shock:onPostStep(function(actor, stack)
 			actor.sprite_index = actor.sprite_death
 			actor.image_index = 0
 		end
+
 	end
 end)
 
@@ -286,7 +300,7 @@ shock:onPostDraw(function(actor, stack)
 end)
 
 shock:onDamagedProc(function(actor, attacker, stack, hit_info)
-	if not hit_info.parent ~= nil then 
+	if not hit_info.parent == nil then 
 		if hit_info.parent:exists() then
 			if hit_info.proc == true and hit_info.attack_info.captaininflictshock == nil and hit_info.parent.object_index == gm.constants.oP then
 				actor:buff_remove(shock)
@@ -1433,11 +1447,13 @@ objShocking:onDraw(function(self)
 		local shocklist = List.new()
 		self:collision_ellipse_list(self.x - 135, self.y - 135, self.x + 135, self.y + 135, gm.constants.pActorCollisionBase, false, true, shocklist, false)
 		for _, actor in ipairs(shocklist) do
-			if actor.team ~= self.parent.team and actor.activity_type ~= 90 and not (actor.activity == 92 and actor.object_index == gm.constants.oTuber) and actor.__activity_handler_state ~= 90 and not GM.actor_is_boss(actor) and actor.object_index ~= gm.constants.oWormBody and actor.object_index ~= gm.constants.oWurmBody and actor.object_index ~= gm.constants.oBrambleBody and actor:buff_stack_count(shock) > 0 then
+			if not shock == nil then
+				if actor.team ~= self.parent.team and actor.activity_type ~= 90 and not (actor.activity == 92 and actor.object_index == gm.constants.oTuber) and actor.__activity_handler_state ~= 90 and not GM.actor_is_boss(actor) and actor.object_index ~= gm.constants.oWormBody and actor.object_index ~= gm.constants.oWurmBody and actor.object_index ~= gm.constants.oBrambleBody and actor:buff_stack_count(shock) > 0 then
 				gm.draw_set_colour(Color.from_rgb(150, 245, 239))
 				gm.draw_set_alpha(0.75)
 				gm.draw_lightning(self.x, self.y, actor.x, actor.y, Color.from_rgb(150, 245, 239))
 				gm.draw_set_alpha(1)
+				end
 			end
 		end
 		shocklist:destroy()
