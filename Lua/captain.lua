@@ -286,9 +286,11 @@ shock:onPostDraw(function(actor, stack)
 end)
 
 shock:onDamagedProc(function(actor, attacker, stack, hit_info)
-	if hit_info.parent:exists() then
-		if hit_info.proc == true and hit_info.attack_info.captaininflictshock == nil and hit_info.parent.object_index == gm.constants.oP then
-			actor:buff_remove(shock)
+	if not hit_info.parent ~= nil then 
+		if hit_info.parent:exists() then
+			if hit_info.proc == true and hit_info.attack_info.captaininflictshock == nil and hit_info.parent.object_index == gm.constants.oP then
+				actor:buff_remove(shock)
+			end
 		end
 	end
 end)
