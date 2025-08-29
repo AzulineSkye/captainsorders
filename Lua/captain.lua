@@ -32,8 +32,8 @@ local sprite_climb = 			Resources.sprite_load(NAMESPACE, "captainClimb", path.co
 local sprite_death = 			Resources.sprite_load(NAMESPACE, "captainDeath", path.combine(PATH, "Sprites/death.png"), 8, 13, 28)
 local sprite_decoy = 			Resources.sprite_load(NAMESPACE, "captainDecoy", path.combine(PATH, "Sprites/decoy.png"), 1, 14, 20)
 
-local sprite_shoot1 = 			Resources.sprite_load(NAMESPACE, "captainShoot1", path.combine(PATH, "Sprites/shoot1.png"), 25, 15, 34, 0.8)
-local sprite_shoot1_half = 		Resources.sprite_load(NAMESPACE, "captainShoot1Half", path.combine(PATH, "Sprites/shoot1Half.png"), 25, 15, 34, 0.8)
+local sprite_shoot1 = 			Resources.sprite_load(NAMESPACE, "captainShoot1", path.combine(PATH, "Sprites/shoot1.png"), 25, 15, 34, 0.9)
+local sprite_shoot1_half = 		Resources.sprite_load(NAMESPACE, "captainShoot1Half", path.combine(PATH, "Sprites/shoot1Half.png"), 25, 15, 34, 0.9)
 local sprite_shoot2 = 			Resources.sprite_load(NAMESPACE, "captainShoot2", path.combine(PATH, "Sprites/shoot2.png"), 9, 12, 26, 1.3)
 local sprite_shoot3 = 			Resources.sprite_load(NAMESPACE, "captainShoot3", path.combine(PATH, "Sprites/shoot3.png"), 4, 13, 20)
 local sprite_call = 			Resources.sprite_load(NAMESPACE, "captainCall", path.combine(PATH, "Sprites/call.png"), 5, 11, 19)
@@ -52,6 +52,15 @@ local sprite_log = 				Resources.sprite_load(NAMESPACE, "captainLog", path.combi
 local sprite_credits = 			Resources.sprite_load(NAMESPACE, "captainCredits", path.combine(PATH, "Sprites/credits.png"), 1, 10, 10)
 
 local sprite_palette = Resources.sprite_load(NAMESPACE, "captainPallete", path.combine(PATH, "Sprites/pallete.png"))
+
+local sound_shoot1 = Resources.sfx_load(NAMESPACE, "captainShoot1Sound", path.combine(PATH, "Sounds/shoot1.ogg"))
+local sound_shoot1_2 = Resources.sfx_load(NAMESPACE, "captainShoot1_2Sound", path.combine(PATH, "Sounds/shoot1_2.ogg"))
+local sound_shoot1_3 = Resources.sfx_load(NAMESPACE, "captainShoot1_3Sound", path.combine(PATH, "Sounds/shoot1_3.ogg"))
+local sound_reload = Resources.sfx_load(NAMESPACE, "captainReloadSound", path.combine(PATH, "Sounds/reload.ogg"))
+local sound_reload_2 = Resources.sfx_load(NAMESPACE, "captainReload_2Sound", path.combine(PATH, "Sounds/reload_2.ogg"))
+local sound_reload_3 = Resources.sfx_load(NAMESPACE, "captainReload_3Sound", path.combine(PATH, "Sounds/reload_3.ogg"))
+local sound_vulcanCharge = Resources.sfx_load(NAMESPACE, "captainVulcanChargeSound", path.combine(PATH, "Sounds/vulcanCharge.ogg"))
+local sound_vulcanCharge_2 = Resources.sfx_load(NAMESPACE, "captainVulcanCharge_2Sound", path.combine(PATH, "Sounds/vulcanCharge_2.ogg"))
 
 local cap = Survivor.new(NAMESPACE, "captain")
 local cap_id = cap.value
@@ -255,12 +264,15 @@ shock:clear_callbacks()
 shock:onApply(function(actor, stack)
 	actor.pHspeed = 0
 	actor.pHmax = 0
+	actor.state = 0
 	
 	if not GM.actor_is_boss(actor) then
 		actor:alarm_set(7, 60)
-		actor:alarm_set(2, 100)
-		
+		actor.x = actor.x
+		actor.ghost_x = actor.x
+
 	end
+	
 	actor.captainshockthreshold = actor.maxhp * 0.1
 	actor.captainshocklightningprevposx = actor.x
 	actor.captainshocklightningprevposy = actor.y
@@ -272,10 +284,12 @@ shock:onPostStep(function(actor, stack)
 	
 	if not GM.actor_is_boss(actor) then
 		actor:alarm_set(7, 60)
-		actor:alarm_set(2, 100)
+		actor.x = actor.x
+		actor.ghost_x = actor.x
 	end
+	
 	if not GM.actor_is_boss(actor) then
-		actor.state = 0
+		
 		if not actor.sprite_death ~= nil then
 			actor.sprite_index = actor.sprite_index
 		else
@@ -300,20 +314,20 @@ shock:onPostDraw(function(actor, stack)
 end)
 
 shock:onDamagedProc(function(actor, attacker, stack, hit_info)
-	if not hit_info.parent == nil then 
+	-- if not hit_info.parent == nil then 
 		if hit_info.parent:exists() then
 			if hit_info.proc == true and hit_info.attack_info.captaininflictshock == nil and hit_info.parent.object_index == gm.constants.oP then
 				actor:buff_remove(shock)
 			end
 		end
-	end
+	-- end
 end)
 
 shock:onRemove(function(actor, stack)
 	if not GM.actor_is_boss(actor) then
 		actor.activity = 0
-		actor:alarm_set(7, 30)
 		actor:skill_util_reset_activity_state()
+		actor:apply_stun(0, actor.image_xscale, 0.5)
 	end
 end)
 
@@ -515,6 +529,7 @@ stvulcan:onEnter(function(actor, data)
 	actor.alpha_preview = math.min(1, 2 * (1 - (data.chargetimer / 72)))
 	local preview = efPreview1:create(actor.x, actor.y)
 	preview.parent = actor
+	gm.sound_play_at(sound_vulcanCharge, 1, 0.9 + math.random() * 0.2, actor.x, actor.y)
 	
 end)
 
@@ -544,8 +559,12 @@ stvulcan:onStep(function(actor, data)
 		actor.range_preview = 1000 - 666 * (data.chargetimer / 72)
 		actor.alpha_preview = math.min(1, 2 * (1 - (data.chargetimer / 72)))
 		
+		-- if data.shotgun_charging_sound == -1 then
+			-- data.shotgun_charging_sound = gm.sound_play_at(gm.constants.wLoader_BulletPunch_ChargeLoop, 1, 1.5, actor.x, actor.y)
+		-- end
+		
 		if data.shotgun_charging_sound == -1 then
-			data.shotgun_charging_sound = gm.sound_play_at(gm.constants.wLoader_BulletPunch_ChargeLoop, 1, 1.5, actor.x, actor.y)
+			
 		end
 		
 		if data.chargetimer > 0 then
@@ -587,13 +606,13 @@ stvulcan:onStep(function(actor, data)
 				end
 			end
 			
-			if gm.audio_is_playing(data.shotgun_charging_sound) then
-				gm.audio_stop_sound(data.shotgun_charging_sound)
+			if gm.audio_is_playing(sound_vulcanCharge) then
+				gm.audio_stop_sound(sound_vulcanCharge)
 			end
 			
 			actor.image_index2 = 14
 			actor.image_speed = data.vulcanspeed
-			actor:sound_play(gm.constants.wBullet2, 1, 0.6 + math.random() * 0.2)
+			actor:sound_play(sound_shoot1, 0.8, 0.9 + math.random() * 0.2)
 			data.fired = 1
 			data.spread = math.max(0, math.floor(data.chargetimer / 4))
 			data.range = 1000 - 666 * (data.chargetimer / 72)
@@ -627,7 +646,7 @@ stvulcan:onStep(function(actor, data)
 		actor:skill_util_strafe_update(0.20 * actor.attack_speed, 0.9)
 		
 		if actor.image_index2 >= 19 and data.reloaded == 0 then
-			actor:sound_play(gm.constants.wSniperReload, 0.7, 1.5)
+			actor:sound_play(sound_reload, 0.5, 0.9)
 			data.reloaded = 1
 		end 
 		if actor.image_index2 >= 25 then
@@ -639,6 +658,9 @@ end)
 stvulcan:onExit(function(actor, data)
 	actor.charging_shotgun = 0
 	actor:skill_util_strafe_exit()
+	if gm.audio_is_playing(sound_vulcanCharge) then
+		gm.audio_stop_sound(sound_vulcanCharge)
+	end
 end)
 
 stvulcan:onGetInterruptPriority(function(actor, data)
